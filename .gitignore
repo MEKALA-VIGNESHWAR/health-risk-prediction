@@ -9,6 +9,8 @@ firebase-adminsdk.json
 
 # Environment files
 .env
+.env.local
+.env.*.local
 application.properties
 
 # IDE files
