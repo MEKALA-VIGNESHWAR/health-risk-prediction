@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-ring': 'pulseRing 2s infinite',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideLeft: {
+                            '0%': { transform: 'translateX(20px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div class="absolute top-10 left-10 w-20 h-20 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-slow"></div>
+            <div class="absolute bottom-10 right-10 w-20 h-20 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-slow" style="animation-delay: 2s;"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-md animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8 text-center animate-slide-up">
+                    <div class="text-4xl mb-2">🏥</div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                    <p class="text-purple-100 text-sm">Sign in to your diabetes prediction account</p>
+                </div>
+
+                <div class="p-8 animate-slide-up" style="animation-delay: 0.1s;">
+                    <div id="loginAlert" class="mb-6 hidden"></div>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6">
+                        <div class="animate-slide-up" style="animation-delay: 0.2s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">👤 Username</label>
+                            <input type="text" id="loginUsername" placeholder="Enter your username" required
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all duration-300">
+                        </div>
+
+                        <div class="animate-slide-up" style="animation-delay: 0.3s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">🔐 Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all duration-300">
+                        </div>
+
+                        <div id="loginLoading" class="hidden text-center py-4">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                        </div>
+
+                        <button type="submit" id="loginSubmit" class="w-full animate-slide-up bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transform hover:scale-105 active:scale-95 transition-all duration-300" style="animation-delay: 0.5s;">
+                            Sign In →
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center animate-slide-up" style="animation-delay: 0.6s;">
+                        <p class="text-gray-600 text-sm">
+                            Don't have an account? 
+                            <a href="#" onclick="showPage('registerPage'); return false;" class="text-purple-600 font-semibold hover:text-purple-700">Create one</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER PAGE -->
+    <div id="registerPage" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div class="absolute top-20 left-20 w-32 h-32 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-bounce-slow"></div>
+            <div class="absolute top-40 right-20 w-32 h-32 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-bounce-slow" style="animation-delay: 2s;"></div>
+            <div class="absolute -bottom-8 left-20 w-32 h-32 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-bounce-slow" style="animation-delay: 4s;"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-2xl animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-6 py-8 text-center animate-slide-up">
+                    <div class="text-4xl mb-2">🏥</div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
+                    <p class="text-indigo-100 text-sm">Join our diabetes prediction system</p>
+                </div>
+
+                <div class="p-8 animate-slide-up" style="animation-delay: 0.1s;">
+                    <div id="registerAlert" class="mb-6 hidden"></div>
+
+                    <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="animate-slide-up" style="animation-delay: 0.2s;">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">👤 First Name</label>
+                                <input type="text" id="regFirstName" placeholder="John" required
+                                    class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                            </div>
+                            <div class="animate-slide-up" style="animation-delay: 0.25s;">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">👤 Last Name</label>
+                                <input type="text" id="regLastName" placeholder="Doe" required
+                                    class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                            </div>
+                        </div>
+
+                        <div class="animate-slide-up" style="animation-delay: 0.3s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">📝 Username</label>
+                            <input type="text" id="regUsername" placeholder="johndoe123" required minlength="3"
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                        </div>
+
+                        <div class="animate-slide-up" style="animation-delay: 0.35s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">📧 Email Address</label>
+                            <input type="email" id="regEmail" placeholder="john@example.com" required
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                        </div>
+
+                        <div class="animate-slide-up" style="animation-delay: 0.4s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">🔐 Password</label>
+                            <input type="password" id="regPassword" placeholder="••••••••" required minlength="6" onkeyup="validatePassword()"
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                            
+                            <div id="passwordReqs" class="mt-3 hidden bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <ul class="space-y-2 text-sm">
+                                    <li id="req-length" class="text-gray-600 flex items-center gap-2">
+                                        <span class="text-gray-400">✗</span><span>At least 6 characters</span>
+                                    </li>
+                                    <li id="req-upper" class="text-gray-600 flex items-center gap-2">
+                                        <span class="text-gray-400">✗</span><span>One uppercase letter</span>
+                                    </li>
+                                    <li id="req-number" class="text-gray-600 flex items-center gap-2">
+                                        <span class="text-gray-400">✗</span><span>One number</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="animate-slide-up" style="animation-delay: 0.45s;">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">🔒 Confirm Password</label>
+                            <input type="password" id="regConfirmPassword" placeholder="••••••••" required minlength="6" onkeyup="checkPasswordMatch()"
+                                class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-purple-500 focus:bg-white transition-all">
+                        </div>
+
+                        <div id="registerLoading" class="hidden text-center py-4">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                        </div>
+
+                        <button type="submit" id="regSubmit" class="w-full animate-slide-up bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 px-4 rounded-lg hover:shadow-xl hover:shadow-purple-500/40 transform hover:scale-105 active:scale-95 transition-all" style="animation-delay: 0.55s;">
+                            Create Account ✨
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center animate-slide-up" style="animation-delay: 0.6s;">
+                        <p class="text-gray-600 text-sm">
+                            Already have an account? 
+                            <a href="#" onclick="showPage('loginPage'); return false;" class="text-purple-600 font-semibold hover:text-purple-700">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="hidden">
+        <!-- Navigation Bar -->
+        <nav class="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 animate-fade-in">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-3xl">🏥</div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        DiabetesCare
+                    </h1>
+                </div>
+                <div class="flex items-center gap-6">
+                    <span id="dashboardUserName" class="text-purple-300 font-semibold"></span>
+                    <button onclick="logout()" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="mb-8 animate-slide-up">
+                <h2 class="text-4xl font-bold text-white mb-2">Welcome back! 👋</h2>
+                <p class="text-purple-300">Your diabetes prediction dashboard</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 animate-slide-up hover:border-blue-500/50 transition-all" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-300 text-sm font-semibold mb-2">Total Predictions</p>
+                            <p id="totalPredictions" class="text-4xl font-bold text-white">0</p>
+                        </div>
+                        <div class="text-5xl opacity-20">📊</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-2xl p-6 animate-slide-up hover:border-red-500/50 transition-all" style="animation-delay: 0.15s;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-red-300 text-sm font-semibold mb-2">High Risk</p>
+                            <p id="highRiskCount" class="text-4xl font-bold text-white">0</p>
+                        </div>
+                        <div class="text-5xl opacity-20">⚠️</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6 animate-slide-up hover:border-green-500/50 transition-all" style="animation-delay: 0.2s;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-300 text-sm font-semibold mb-2">Low Risk</p>
+                            <p id="lowRiskCount" class="text-4xl font-bold text-white">0</p>
+                        </div>
+                        <div class="text-5xl opacity-20">✅</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-6 animate-slide-up hover:border-yellow-500/50 transition-all" style="animation-delay: 0.25s;">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-yellow-300 text-sm font-semibold mb-2">Risk Rate</p>
+                            <p id="riskRate" class="text-4xl font-bold text-white">0%</p>
+                        </div>
+                        <div class="text-5xl opacity-20">📈</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Recent Predictions -->
+                <div class="lg:col-span-2 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 animate-slide-up hover:border-purple-500/50 transition-all" style="animation-delay: 0.3s;">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-white flex items-center gap-2">📋 Recent Predictions</h3>
+                        <button onclick="showPage('predictionPage')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">New</button>
+                    </div>
+
+                    <div id="predictionsList" class="space-y-4">
+                        <div class="text-purple-300 text-center py-8">Loading predictions...</div>
+                    </div>
+
+                    <button onclick="showPage('historyPage')" class="w-full mt-6 py-3 bg-purple-600/50 hover:bg-purple-600 text-white border border-purple-500/50 rounded-lg">
+                        View Full History →
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="space-y-6 animate-slide-left" style="animation-delay: 0.3s;">
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="showPage('predictionPage')">
+                        <div class="text-5xl mb-4">🔍</div>
+                        <h4 class="text-xl font-bold text-white mb-2">New Prediction</h4>
+                        <p class="text-purple-100 text-sm">Check your diabetes risk now</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-red-600/50 to-pink-600/50 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="showHighRisk()">
+                        <div class="text-5xl mb-4">⚠️</div>
+                        <h4 class="text-xl font-bold text-white mb-2">High Risk Check</h4>
+                        <p class="text-red-100 text-sm">View high-risk cases</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-600/50 to-cyan-600/50 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="viewProfile()">
+                        <div class="text-5xl mb-4">👤</div>
+                        <h4 class="text-xl font-bold text-white mb-2">My Profile</h4>
+                        <p class="text-blue-100 text-sm">View account info</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tips -->
+            <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 animate-slide-up" style="animation-delay: 0.4s;">
+                <h3 class="text-2xl font-bold text-white mb-6">💚 Health Tips</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-black/20 rounded-lg p-4">
+                        <p class="text-green-300 font-semibold mb-2">🥗 Nutrition</p>
+                        <p class="text-gray-300 text-sm">Maintain a balanced diet with low sugar intake.</p>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-4">
+                        <p class="text-green-300 font-semibold mb-2">🏃 Exercise</p>
+                        <p class="text-gray-300 text-sm">Get at least 150 minutes of exercise weekly.</p>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-4">
+                        <p class="text-green-300 font-semibold mb-2">😴 Sleep</p>
+                        <p class="text-gray-300 text-sm">Maintain 7-9 hours of quality sleep daily.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profileModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+            <div class="bg-gradient-to-br from-gray-900 to-black border border-blue-500/50 rounded-2xl max-w-md w-full animate-slide-up">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-white">👤 My Profile</h3>
+                        <button onclick="closeProfileModal()" class="text-gray-400 hover:text-white text-2xl">×</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm">Name</p>
+                            <p id="profileName" class="text-white text-lg font-semibold">-</p>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm">Email</p>
+                            <p id="profileEmail" class="text-white text-lg font-semibold">-</p>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm">Username</p>
+                            <p id="profileUsername" class="text-white text-lg font-semibold">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- High Risk Modal -->
+        <div id="highRiskModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+            <div class="bg-gradient-to-br from-gray-900 to-black border border-red-500/50 rounded-2xl max-w-2xl w-full max-h-96 overflow-auto animate-slide-up">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-white">⚠️ High Risk Predictions</h3>
+                        <button onclick="closeHighRiskModal()" class="text-gray-400 hover:text-white text-2xl">×</button>
+                    </div>
+                    <div id="highRiskList" class="space-y-4">
+                        <p class="text-gray-300">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREDICTION PAGE -->
+    <div id="predictionPage" class="hidden min-h-screen">
+        <div class="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="text-white font-bold text-lg">🏥 Diabetes Prediction</div>
+                <div class="flex gap-3">
+                    <button onclick="showPage('dashboardPage')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">← Dashboard</button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-white mb-2">🔍 Diabetes Risk Assessment</h1>
+                <p class="text-purple-300">Enter patient data to see diabetes prediction</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Form -->
+                <div class="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8">
+                    <div id="predAlert" class="mb-6 hidden"></div>
+                    <form id="predictionForm" onsubmit="handlePrediction(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">� Gender</label>
+                                <select id="gender" onchange="handleGenderChange()" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="female">Female</option>
+                                    <option value="male">Male</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">👶 Pregnancies</label>
+                                <input type="number" id="pregnancies" min="0" max="17" value="0" disabled class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <p id="pregnancyNote" class="text-xs text-gray-400 mt-1">Select Female to enable pregnancies</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">🩸 Glucose (mg/dL)</label>
+                                <input type="number" id="glucose" min="0" max="200" value="100" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">❤️ Blood Pressure</label>
+                                <input type="number" id="bloodPressure" min="0" max="200" value="70" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">📏 Skin Thickness</label>
+                                <input type="number" id="skinThickness" min="0" max="100" value="20" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">💉 Insulin (µIU/ml)</label>
+                                <input type="number" id="insulin" min="0" max="900" value="0" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">⚖️ BMI</label>
+                                <input type="number" id="bmi" min="10" max="60" step="0.1" value="25" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">🧬 Diabetes Pedigree</label>
+                                <input type="number" id="dpf" min="0" max="3" step="0.01" value="0.5" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-white mb-2">🎂 Age</label>
+                                <input type="number" id="age" min="18" max="120" value="30" class="w-full px-4 py-3 bg-gray-800 border border-purple-500/50 rounded-lg text-white focus:outline-none focus:border-purple-500">
+                            </div>
+                        </div>
+
+                        <div id="predLoading" class="hidden text-center py-4">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                        </div>
+
+                        <button type="submit" id="predSubmit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-purple-500/50 transform hover:scale-105 transition-all">
+                            🔮 Predict
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results -->
+                <div id="resultsSection" class="hidden bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-purple-500/20 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-white mb-6">📊 Prediction Results</h3>
+                    
+                    <div class="space-y-6">
+                        <div id="resultBadge" class="text-center"></div>
+                        
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm mb-2">Risk Assessment</p>
+                            <p id="resultMessage" class="text-white font-semibold"></p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-green-300">✅ No Diabetes</span>
+                                    <span id="noDiabetesProb" class="text-white">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div id="noDiabetesBar" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-red-300">⚠️ Has Diabetes</span>
+                                    <span id="diabetesProb" class="text-white">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div id="diabetesBar" class="bg-red-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/30 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400 text-sm">🔍 Confidence Level:</span>
+                                <span id="confidenceLevel" class="text-white font-semibold">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div id="confidenceBar" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-600">
+                                <p class="text-gray-500 text-xs">🤖 Model: <span id="modelUsed" class="text-gray-300">-</span></p>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm mb-2">Patient Input Summary</p>
+                            <div id="inputSummary" class="text-sm text-gray-300 space-y-1"></div>
+                        </div>
+
+                        <button onclick="resetPrediction()" class="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all">
+                            ↻ New Prediction
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div id="historyPage" class="hidden min-h-screen">
+        <nav class="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white">📋 Prediction History</h1>
+                <button onclick="showPage('dashboardPage')" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">
+                    ← Dashboard
+                </button>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div id="historyList" class="space-y-4">
+                <div class="text-purple-300 text-center py-8">Loading prediction history...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="highRiskModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-red-500/50 rounded-2xl max-w-2xl w-full max-h-96 overflow-auto animate-slide-up">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-white">⚠️ High Risk Predictions</h3>
+                    <button onclick="closeHighRiskModal()" class="text-gray-400 hover:text-white text-2xl">×</button>
+                </div>
+                <div id="highRiskList" class="space-y-4">
+                    <p class="text-gray-300">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+
+        console.log('Application initialized. API Base URL:', API_BASE_URL);
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            console.log('Page loaded. Checking for existing session...');
+            
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const token = localStorage.getItem('token');
+            
+            console.log('User from localStorage:', user);
+            console.log('Token exists:', !!token);
+            
+            if (user && user.userId && token) {
+                console.log('Active session found. Showing dashboard.');
+                showPage('dashboardPage');
+                loadDashboard();
+            } else {
+                console.log('No active session. Showing login page.');
+                showPage('loginPage');
+            }
+        });
+
+        // Page Navigation
+        function showPage(pageName) {
+            console.log('Navigating to:', pageName);
+            
+            // Hide all pages
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show selected page
+            const selectedPage = document.getElementById(pageName);
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden');
+                console.log('Page shown:', pageName);
+            } else {
+                console.error('Page not found:', pageName);
+            }
+        }
+
+        // Alerts
+        function showAlert(elementId, message, type = 'info') {
+            const alert = document.getElementById(elementId);
+            if (!alert) {
+                console.error('Alert element not found:', elementId);
+                return;
+            }
+            
+            alert.className = `p-4 rounded-lg animate-scale-in border-l-4 ${
+                type === 'success' ? 'bg-green-100 text-green-700 border-green-500' :
+                type === 'error' ? 'bg-red-100 text-red-700 border-red-500' :
+                type === 'warning' ? 'bg-yellow-100 text-yellow-700 border-yellow-500' :
+                'bg-blue-100 text-blue-700 border-blue-500'
+            }`;
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+            
+            console.log(`Alert [${type}]:`, message);
+            
+            if (type !== 'error') {
+                setTimeout(() => alert.classList.add('hidden'), 4000);
+            }
+        }
+
+        // Handle gender change for pregnancies field
+        function handleGenderChange() {
+            const gender = document.getElementById('gender').value;
+            const pregnancyInput = document.getElementById('pregnancies');
+            const pregnancyNote = document.getElementById('pregnancyNote');
+            
+            if (gender === 'female') {
+                pregnancyInput.disabled = false;
+                pregnancyInput.style.opacity = '1';
+                pregnancyNote.textContent = 'Enter number of pregnancies';
+                pregnancyInput.setAttribute('required', 'required');
+            } else if (gender === 'male') {
+                pregnancyInput.disabled = true;
+                pregnancyInput.value = '0';
+                pregnancyInput.style.opacity = '0.5';
+                pregnancyNote.textContent = 'Not applicable for males';
+                pregnancyInput.removeAttribute('required');
+            } else {
+                pregnancyInput.disabled = true;
+                pregnancyInput.value = '0';
+                pregnancyNote.textContent = 'Select Female to enable pregnancies';
+                pregnancyInput.removeAttribute('required');
+            }
+        }
+
+        // Check if backend is running
+        async function checkBackendConnection() {
+            try {
+                const baseUrl = API_BASE_URL.split('/api')[0];
+                const response = await fetch(`${baseUrl}/api/health`, {
+                    method: 'GET'
+                });
+                return response.ok;
+            } catch (error) {
+                console.warn('Backend health check failed:', error);
+                return false;
+            }
+        }
+
+        // LOGIN
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            // Clear previous alerts
+            document.getElementById('loginAlert').classList.add('hidden');
+            
+            const username = document.getElementById('loginUsername')?.value.trim() || '';
+            const password = document.getElementById('loginPassword')?.value || '';
+
+            // Validation
+            if (!username || !password) {
+                showAlert('loginAlert', '❌ Please enter username and password', 'error');
+                return;
+            }
+
+            document.getElementById('loginLoading').classList.remove('hidden');
+            document.getElementById('loginSubmit').disabled = true;
+
+            try {
+                console.log('🔐 Login Attempt:', { username, password: '***masked***', timestamp: new Date().toISOString() });
+                console.log('📤 Sending to:', `${API_BASE_URL}/auth/login`);
+                
+                const requestBody = JSON.stringify({ username, password });
+                console.log('📋 Request Body:', requestBody);
+                
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: requestBody
+                });
+
+                console.log('📥 Response Status:', response.status, `(${response.statusText})`);
+                console.log('📋 Response Headers:', {
+                    'content-type': response.headers.get('content-type'),
+                    'content-length': response.headers.get('content-length')
+                });
+                
+                const data = await response.json();
+                console.log('📦 Response Data:', data);
+                
+                if (response.ok && data.userId) {
+                    showAlert('loginAlert', '✅ Login successful! Redirecting to dashboard...', 'success');
+                    
+                    // Store auth data
+                    localStorage.setItem('user', JSON.stringify(data));
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.userId.toString());
+                    
+                    console.log('💾 Stored in localStorage:', { userId: data.userId, token: data.token.substring(0, 20) + '...' });
+                    
+                    // Wait before redirect to show success message
+                    setTimeout(() => {
+                        console.log('🔄 Switching to dashboard page');
+                        showPage('dashboardPage');
+                        
+                        // Reset form
+                        document.getElementById('loginForm').reset();
+                        document.getElementById('loginUsername').value = '';
+                        document.getElementById('loginPassword').value = '';
+                        
+                        // Load dashboard data
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    const errorMsg = data.error || data.message || 'Login failed. Please check your credentials.';
+                    console.error('❌ Login Error:', { status: response.status, error: errorMsg, fullResponse: data });
+                    showAlert('loginAlert', `❌ ${errorMsg}`, 'error');
+                }
+            } catch (error) {
+                console.error('Login exception:', error);
+                showAlert('loginAlert', `❌ Connection error: ${error.message || 'Unable to reach server'}`, 'error');
+            } finally {
+                document.getElementById('loginLoading').classList.add('hidden');
+                document.getElementById('loginSubmit').disabled = false;
+            }
+        }
+
+        // REGISTER
+        function validatePassword() {
+            const password = document.getElementById('regPassword').value;
+            const reqs = document.getElementById('passwordReqs');
+            
+            if (password.length > 0) {
+                reqs.classList.remove('hidden');
+            } else {
+                reqs.classList.add('hidden');
+            }
+
+            const hasLength = password.length >= 6;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+
+            updateReq('req-length', hasLength);
+            updateReq('req-upper', hasUpper);
+            updateReq('req-number', hasNumber);
+        }
+
+        function updateReq(id, isValid) {
+            const el = document.getElementById(id);
+            if (isValid) {
+                el.classList.remove('text-gray-600');
+                el.classList.add('text-green-600');
+                el.querySelector('span:first-child').textContent = '✓';
+                el.querySelector('span:first-child').classList.remove('text-gray-400');
+                el.querySelector('span:first-child').classList.add('text-green-600');
+            } else {
+                el.classList.remove('text-green-600');
+                el.classList.add('text-gray-600');
+                el.querySelector('span:first-child').textContent = '✗';
+                el.querySelector('span:first-child').classList.remove('text-green-600');
+                el.querySelector('span:first-child').classList.add('text-gray-400');
+            }
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            const input = document.getElementById('regConfirmPassword');
+            
+            if (password === confirm && password.length > 0) {
+                input.classList.remove('border-gray-200');
+                input.classList.add('border-green-500', 'bg-green-50');
+            } else if (confirm.length > 0) {
+                input.classList.remove('border-gray-200', 'bg-green-50');
+                input.classList.add('border-red-500');
+            } else {
+                input.classList.remove('border-red-500', 'bg-green-50');
+                input.classList.add('border-gray-200');
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            // Clear previous alerts
+            document.getElementById('registerAlert').classList.add('hidden');
+            
+            const firstName = document.getElementById('regFirstName')?.value.trim() || '';
+            const lastName = document.getElementById('regLastName')?.value.trim() || '';
+            const username = document.getElementById('regUsername')?.value.trim() || '';
+            const email = document.getElementById('regEmail')?.value.trim() || '';
+            const password = document.getElementById('regPassword')?.value || '';
+            const confirmPassword = document.getElementById('regConfirmPassword')?.value || '';
+
+            // Validation
+            if (!firstName || !lastName || !username || !email || !password) {
+                showAlert('registerAlert', '❌ All fields are required', 'warning');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('registerAlert', '❌ Password must be at least 6 characters', 'warning');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAlert('registerAlert', '❌ Passwords do not match', 'error');
+                return;
+            }
+
+            document.getElementById('registerLoading').classList.remove('hidden');
+            document.getElementById('regSubmit').disabled = true;
+
+            try {
+                console.log('Attempting registration for user:', username);
+                
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ firstName, lastName, username, email, password, confirmPassword })
+                });
+
+                const data = await response.json();
+                console.log('Registration response:', data);
+                
+                if (response.ok && data.userId) {
+                    showAlert('registerAlert', '✅ Registration successful! Redirecting to dashboard...', 'success');
+                    
+                    // Store auth data
+                    localStorage.setItem('user', JSON.stringify(data));
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userId', data.userId.toString());
+                    
+                    console.log('User registered and stored:', data.userId);
+                    
+                    setTimeout(() => {
+                        console.log('Switching to dashboard page');
+                        showPage('dashboardPage');
+                        
+                        // Reset form
+                        document.getElementById('registerForm').reset();
+                        
+                        // Load dashboard data
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    const errorMsg = data.error || data.message || 'Registration failed. Please try again.';
+                    console.error('Registration error:', errorMsg);
+                    showAlert('registerAlert', `❌ ${errorMsg}`, 'error');
+                }
+            } catch (error) {
+                console.error('Registration exception:', error);
+                showAlert('registerAlert', `❌ Connection error: ${error.message || 'Unable to reach server'}`, 'error');
+            } finally {
+                document.getElementById('registerLoading').classList.add('hidden');
+                document.getElementById('regSubmit').disabled = false;
+            }
+        }
+
+        // DASHBOARD
+        async function loadDashboard() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user || !user.userId) {
+                    console.error('No user data found in localStorage');
+                    showPage('loginPage');
+                    return;
+                }
+                
+                document.getElementById('dashboardUserName').textContent = (user.firstName || 'User') + ' ' + (user.lastName || '');
+                
+                await loadPredictions();
+                await loadStats();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showPage('loginPage');
+            }
+        }
+
+        async function loadPredictions() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const token = localStorage.getItem('token');
+                
+                if (!user || !user.userId) {
+                    console.error('User not found in localStorage');
+                    return;
+                }
+                
+                console.log('Loading predictions for user:', user.userId);
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.userId}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn(`Failed to load predictions: ${response.status}`);
+                    return;
+                }
+                
+                const predictions = await response.json();
+                console.log(`Loaded ${predictions.length} predictions`);
+                
+                const container = document.getElementById('predictionsList');
+                
+                if (predictions.length === 0) {
+                    container.innerHTML = '<div class="text-purple-300 text-center py-8">No predictions yet. Start with a new check!</div>';
+                    return;
+                }
+
+                container.innerHTML = predictions.slice(0, 5).map((pred, index) => `
+                    <div class="bg-black/20 rounded-lg p-4 border border-purple-500/30 hover:border-purple-500/60 transition-all animate-slide-up" style="animation-delay: ${index * 0.1}s;">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm">📅 ${new Date(pred.createdDate).toLocaleDateString()}</p>
+                                <p class="text-white font-semibold mt-1">Glucose: ${pred.glucose} | BMI: ${pred.bmi}</p>
+                                <p class="text-purple-300 text-sm mt-1">${pred.predictionMessage}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${
+                                pred.predictionResult === 1 
+                                    ? 'bg-red-500/30 text-red-300' 
+                                    : 'bg-green-500/30 text-green-300'
+                            }">
+                                ${pred.predictionResult === 1 ? '⚠️ Positive' : '✅ Negative'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading predictions:', error);
+                const container = document.getElementById('predictionsList');
+                if (container) {
+                    container.innerHTML = '<div class="text-red-400 text-center py-8">Error loading predictions</div>';
+                }
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (!user || !user.userId) {
+                    console.error('User not found in localStorage');
+                    return;
+                }
+                
+                console.log('Loading stats for user:', user.userId);
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.userId}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn(`Failed to load stats: ${response.status}`);
+                    return;
+                }
+                
+                const predictions = await response.json();
+                console.log(`Processing ${predictions.length} predictions for stats`);
+                
+                const highRisk = predictions.filter(p => p.predictionResult === 1).length;
+                const lowRisk = predictions.filter(p => p.predictionResult === 0).length;
+                const total = predictions.length;
+                const riskPercentage = total > 0 ? ((highRisk / total) * 100).toFixed(1) : 0;
+
+                const totalElem = document.getElementById('totalPredictions');
+                const highRiskElem = document.getElementById('highRiskCount');
+                const lowRiskElem = document.getElementById('lowRiskCount');
+                const riskRateElem = document.getElementById('riskRate');
+                
+                if (totalElem) totalElem.textContent = total;
+                if (highRiskElem) highRiskElem.textContent = highRisk;
+                if (lowRiskElem) lowRiskElem.textContent = lowRisk;
+                if (riskRateElem) riskRateElem.textContent = riskPercentage + '%';
+                
+                console.log(`Stats updated: Total=${total}, HighRisk=${highRisk}, LowRisk=${lowRisk}, RiskRate=${riskPercentage}%`);
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // PREDICTION
+        async function handlePrediction(event) {
+            event.preventDefault();
+
+            // Validate gender selection
+            const gender = document.getElementById('gender').value;
+            if (!gender) {
+                showAlert('predAlert', '❌ Please select your gender', 'warning');
+                return;
+            }
+
+            // Get user for associating prediction
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.userId) {
+                showAlert('predAlert', '❌ User not authenticated. Please login again.', 'error');
+                return;
+            }
+
+            const data = {
+                pregnancies: gender === 'male' ? 0 : parseInt(document.getElementById('pregnancies').value),
+                glucose: parseInt(document.getElementById('glucose').value),
+                bloodPressure: parseInt(document.getElementById('bloodPressure').value),
+                skinThickness: parseInt(document.getElementById('skinThickness').value),
+                insulin: parseInt(document.getElementById('insulin').value),
+                bmi: parseFloat(document.getElementById('bmi').value),
+                diabetesPedigreeFunction: parseFloat(document.getElementById('dpf').value),
+                age: parseInt(document.getElementById('age').value),
+                userId: user.userId,
+                gender: gender
+            };
+
+            // Validate inputs
+            if (!Object.values(data).every(v => v !== null && v !== undefined && v !== '')) {
+                showAlert('predAlert', '❌ All fields are required', 'warning');
+                return;
+            }
+
+            // Validate numeric values
+            if (data.glucose < 0 || data.glucose > 200) {
+                showAlert('predAlert', '❌ Glucose must be between 0-200 mg/dL', 'warning');
+                return;
+            }
+            if (data.bmi < 10 || data.bmi > 60) {
+                showAlert('predAlert', '❌ BMI must be between 10-60', 'warning');
+                return;
+            }
+            if (data.age < 18 || data.age > 120) {
+                showAlert('predAlert', '❌ Age must be between 18-120', 'warning');
+                return;
+            }
+
+            console.log('Sending prediction request:', data);
+            document.getElementById('predLoading').classList.remove('hidden');
+            document.getElementById('predSubmit').disabled = true;
+
+            try {
+                // Check backend connection first
+                showAlert('predAlert', '⏳ Checking backend connection...', 'info');
+                const backendUrl = `${API_BASE_URL.split('/api')[0]}/api`;
+                const token = localStorage.getItem('token');
+                console.log('Attempting to connect to backend at:', backendUrl);
+
+                const response = await fetch(`${backendUrl}/predict/diabetes`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(data),
+                    signal: AbortSignal.timeout(10000) // 10 second timeout
+                });
+
+                console.log('Response status:', response.status, 'Status OK:', response.ok);
+                console.log('Response headers:', response.headers.get('content-type'));
+                
+                const resultText = await response.text();
+                console.log('Raw response:', resultText);
+                
+                if (!response.ok) {
+                    console.error(`HTTP ${response.status}:`, response.statusText);
+                    console.error('Response body:', resultText);
+                    
+                    if (response.status === 401) {
+                        throw new Error('Authentication failed. Please login again.');
+                    } else if (response.status === 403) {
+                        throw new Error('You do not have permission to make predictions.');
+                    } else if (response.status === 500) {
+                        throw new Error('Server error. Please try again later.');
+                    } else if (response.status === 0) {
+                        throw new Error('Cannot connect to backend server');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                }
+
+                let result;
+                try {
+                    result = JSON.parse(resultText);
+                } catch (e) {
+                    console.error('Failed to parse response JSON:', e);
+                    throw new Error('Invalid response format from server');
+                }
+                
+                console.log('Prediction result:', result);
+                
+                if (result && result.prediction !== undefined) {
+                    console.log('Prediction received:', result);
+                    displayPredictionResult(result, data);
+                    showAlert('predAlert', '✅ Prediction completed successfully!', 'success');
+                    
+                    // Refresh predictions list
+                    setTimeout(() => {
+                        loadPredictions();
+                        loadStats();
+                    }, 1500);
+                } else {
+                    const errorMsg = result?.error || result?.message || 'Prediction failed - Invalid response';
+                    showAlert('predAlert', `❌ ${errorMsg}`, 'error');
+                    console.error('Prediction error:', result);
+                }
+            } catch (error) {
+                console.error('Prediction exception:', error);
+                
+                let friendlyMessage = 'Failed to get prediction';
+                if (error.name === 'AbortError' || error.message.includes('timeout')) {
+                    friendlyMessage = '❌ Connection timeout. Make sure the backend server is running on port 8080 (http://localhost:8080)';
+                } else if (error.message.includes('Failed to fetch') || error.message.includes('Cannot connect')) {
+                    friendlyMessage = '❌ Cannot connect to backend server. Make sure it\'s running on http://localhost:8080';
+                } else if (error.message.includes('NetworkError')) {
+                    friendlyMessage = '❌ Network error. Check your internet connection and backend server status';
+                } else {
+                    friendlyMessage = `❌ ${error.message || 'Failed to get prediction'}`;
+                }
+                
+                showAlert('predAlert', friendlyMessage, 'error');
+            } finally {
+                document.getElementById('predLoading').classList.add('hidden');
+                document.getElementById('predSubmit').disabled = false;
+            }
+        }
+
+        function displayPredictionResult(result, input) {
+            if (!result || result.prediction === undefined) {
+                console.error('Invalid result object:', result);
+                return;
+            }
+
+            const resultsSection = document.getElementById('resultsSection');
+            const badgeDiv = document.getElementById('resultBadge');
+            
+            if (!badgeDiv || !resultsSection) {
+                console.error('Result display elements not found');
+                return;
+            }
+            
+            badgeDiv.innerHTML = `<div class="px-6 py-3 rounded-full text-lg font-bold inline-block ${
+                result.prediction === 1 
+                    ? 'bg-red-500/30 text-red-300' 
+                    : 'bg-green-500/30 text-green-300'
+            }">
+                ${result.prediction === 1 ? '⚠️ HIGH RISK - Diabetes Positive' : '✅ LOW RISK - Diabetes Negative'}
+            </div>`;
+
+            const msgElem = document.getElementById('resultMessage');
+            const noDiabProbElem = document.getElementById('noDiabetesProb');
+            const diabProbElem = document.getElementById('diabetesProb');
+            const noDiabBarElem = document.getElementById('noDiabetesBar');
+            const diabBarElem = document.getElementById('diabetesBar');
+            const confidenceLevelElem = document.getElementById('confidenceLevel');
+            const confidenceBarElem = document.getElementById('confidenceBar');
+            const modelUsedElem = document.getElementById('modelUsed');
+            const inputSummaryElem = document.getElementById('inputSummary');
+            
+            if (msgElem) msgElem.textContent = result.message || '';
+            if (noDiabProbElem) noDiabProbElem.textContent = ((result.probabilityNoDiabetes || 0) * 100).toFixed(1) + '%';
+            if (diabProbElem) diabProbElem.textContent = ((result.probabilityDiabetes || 0) * 100).toFixed(1) + '%';
+            if (noDiabBarElem) noDiabBarElem.style.width = ((result.probabilityNoDiabetes || 0) * 100) + '%';
+            if (diabBarElem) diabBarElem.style.width = ((result.probabilityDiabetes || 0) * 100) + '%';
+            if (confidenceLevelElem) confidenceLevelElem.textContent = ((result.confidenceLevel || 0) * 100).toFixed(1) + '%';
+            if (confidenceBarElem) confidenceBarElem.style.width = ((result.confidenceLevel || 0) * 100) + '%';
+            if (modelUsedElem) modelUsedElem.textContent = result.modelUsed || 'Unknown Model';
+
+            const summary = `
+                <div>Pregnancies: ${input.pregnancies}</div>
+                <div>Glucose: ${input.glucose} mg/dL</div>
+                <div>Blood Pressure: ${input.bloodPressure} mmHg</div>
+                <div>BMI: ${input.bmi}</div>
+                <div>Age: ${input.age} years</div>
+            `;
+            if (inputSummaryElem) inputSummaryElem.innerHTML = summary;
+
+            resultsSection.classList.remove('hidden');
+            console.log('Prediction result displayed');
+        }
+
+        function resetPrediction() {
+            document.getElementById('predictionForm').reset();
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('pregnancies').value = '0';
+            document.getElementById('glucose').value = '100';
+            document.getElementById('bloodPressure').value = '70';
+            document.getElementById('skinThickness').value = '20';
+            document.getElementById('insulin').value = '0';
+            document.getElementById('bmi').value = '25';
+            document.getElementById('dpf').value = '0.5';
+            document.getElementById('age').value = '30';
+        }
+
+        // HISTORY
+        async function loadHistory() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (!user || !user.userId) {
+                    console.error('User not found in localStorage');
+                    return;
+                }
+                
+                console.log('Loading history for user:', user.userId);
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.userId}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn(`Failed to load history: ${response.status}`);
+                    return;
+                }
+                
+                const predictions = await response.json();
+                console.log(`Loaded ${predictions.length} historical predictions`);
+                
+                const container = document.getElementById('historyList');
+                if (!container) {
+                    console.error('History container not found');
+                    return;
+                }
+                
+                if (predictions.length === 0) {
+                    container.innerHTML = '<div class="text-center py-12"><p class="text-purple-300 text-lg">No predictions yet</p></div>';
+                    return;
+                }
+
+                container.innerHTML = predictions.map((pred, index) => `
+                    <div class="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/60 transition-all animate-slide-up" style="animation-delay: ${index * 0.05}s;">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">📅 Date</p>
+                                <p class="text-white font-semibold">${new Date(pred.createdDate).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">👤 Age</p>
+                                <p class="text-white font-semibold">${pred.age}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">📊 Glucose</p>
+                                <p class="text-white font-semibold">${pred.glucose}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">⚖️ BMI</p>
+                                <p class="text-white font-semibold">${(pred.bmi || 0).toFixed(1)}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">🎯 Result</p>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold ${
+                                    pred.predictionResult === 1 
+                                        ? 'bg-red-500/30 text-red-300' 
+                                        : 'bg-green-500/30 text-green-300'
+                                }">
+                                    ${pred.predictionResult === 1 ? '⚠️ Positive' : '✅ Negative'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full transition-all" style="width: ${(pred.probabilityDiabetes || 0) * 100}%"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">${pred.predictionMessage || ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+                const container = document.getElementById('historyList');
+                if (container) {
+                    container.innerHTML = '<div class="text-red-400 text-center py-8">Error loading history</div>';
+                }
+            }
+        }
+
+        // PROFILE
+        function viewProfile() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (!user) {
+                    console.error('User not found in localStorage');
+                    showAlert('profile', '❌ User data not found', 'error');
+                    return;
+                }
+                
+                const profileName = document.getElementById('profileName');
+                const profileEmail = document.getElementById('profileEmail');
+                const profileUsername = document.getElementById('profileUsername');
+                const profileModal = document.getElementById('profileModal');
+                
+                if (profileName) profileName.textContent = (user.firstName || '') + ' ' + (user.lastName || '');
+                if (profileEmail) profileEmail.textContent = user.email || 'N/A';
+                if (profileUsername) profileUsername.textContent = user.username || 'N/A';
+                if (profileModal) profileModal.classList.remove('hidden');
+                
+                console.log('Profile displayed for user:', user.username);
+            } catch (error) {
+                console.error('Error viewing profile:', error);
+                showAlert('profile', '❌ Error loading profile', 'error');
+            }
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        // HIGH RISK
+        async function showHighRisk() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (!user || !user.userId) {
+                    console.error('User not found');
+                    showAlert('highRisk', '❌ User not authenticated', 'error');
+                    return;
+                }
+                
+                console.log('Loading high-risk predictions...');
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/predict/high-risk`, {
+                    method: 'GET',
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn(`Failed to load high-risk predictions: ${response.status}`);
+                    return;
+                }
+                
+                const predictions = await response.json();
+                console.log(`Loaded ${predictions.length} total high-risk predictions`);
+                
+                const userHighRisk = predictions.filter(p => !p.userId || p.userId === user.userId);
+                console.log(`Found ${userHighRisk.length} high-risk predictions for user`);
+                    
+                const list = document.getElementById('highRiskList');
+                if (!list) {
+                    console.error('High risk list container not found');
+                    return;
+                }
+                
+                if (userHighRisk.length === 0) {
+                    list.innerHTML = '<p class="text-green-300">No high-risk predictions found!</p>';
+                } else {
+                    list.innerHTML = userHighRisk.map((pred, index) => `
+                        <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 animate-slide-up" style="animation-delay: ${index * 0.1}s;">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-red-300 font-semibold">📅 ${new Date(pred.createdDate).toLocaleDateString()}</p>
+                                    <p class="text-gray-300 text-sm mt-1">Age: ${pred.age} | Glucose: ${pred.glucose} | BMI: ${(pred.bmi || 0).toFixed(1)}</p>
+                                    <p class="text-red-400 text-sm mt-1">${pred.predictionMessage || 'High risk prediction'}</p>
+                                </div>
+                                <span class="text-red-400 font-bold">${((pred.probabilityDiabetes || 0) * 100).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                    
+                const modal = document.getElementById('highRiskModal');
+                if (modal) modal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading high-risk predictions:', error);
+                showAlert('highRisk', `❌ Error loading high-risk data: ${error.message}`, 'error');
+            }
+        }
+
+        function closeHighRiskModal() {
+            document.getElementById('highRiskModal').classList.add('hidden');
+        }
+
+        // LOGOUT
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    // Clear all user data
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    
+                    console.log('User logged out successfully');
+                    
+                    // Show login page
+                    showPage('loginPage');
+                    
+                    // Reset forms
+                    const loginForm = document.getElementById('loginForm');
+                    const registerForm = document.getElementById('registerForm');
+                    if (loginForm) loginForm.reset();
+                    if (registerForm) registerForm.reset();
+                    
+                    // Clear alerts
+                    const alerts = document.querySelectorAll('[id$="Alert"]');
+                    alerts.forEach(alert => alert.classList.add('hidden'));
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    showPage('loginPage');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

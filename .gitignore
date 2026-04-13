@@ -1,0 +1,19 @@
+# Build output
+target/
+*.jar
+*.class
+
+# Firebase / Google credentials
+firebase-adminsdk.json
+*.json
+
+# Environment files
+.env
+application.properties
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
