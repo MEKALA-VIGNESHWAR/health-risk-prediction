@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/verify").permitAll()
+                .requestMatchers("/api/predict/diabetes").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 
                 // Require authentication for other endpoints

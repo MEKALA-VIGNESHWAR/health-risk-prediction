@@ -4,6 +4,7 @@ import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.LoginResponse;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
+import com.example.demo.entity.UserRole;
 import com.example.demo.repository.UserRepositoryJPA;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,18 @@ public class AuthService {
             throw new IllegalArgumentException("Password must be at least 6 characters");
         }
 
+        // Enforce: Public registration can ONLY create PATIENT accounts
+        // Any attempt to create DOCTOR or ADMIN through public registration is denied
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            String requestedRole = request.getRole().toUpperCase();
+            if (!requestedRole.equals("PATIENT")) {
+                log.warn("SECURITY: Registration attempt with restricted role {}: username {}", 
+                        requestedRole, request.getUsername());
+                throw new IllegalArgumentException("Public registration can only create PATIENT accounts. " +
+                        "Contact administrator to create DOCTOR or ADMIN accounts.");
+            }
+        }
+
         // Create new user with hashed password
         User user = new User();
         user.setId(UUID.randomUUID());
@@ -73,6 +86,10 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword())); // Hash password with BCrypt
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
+        
+        // Enforce PATIENT role for public registration
+        user.setRole(UserRole.PATIENT);
+        
         user.setCreatedDate(System.currentTimeMillis());
         user.setUpdatedDate(System.currentTimeMillis());
 
@@ -89,6 +106,7 @@ public class AuthService {
                 savedUser.getFirstName(),
                 savedUser.getLastName(),
                 token,
+                savedUser.getRole().toString(),
                 "Registration successful"
         );
     }
@@ -132,6 +150,7 @@ public class AuthService {
                 user.getFirstName(),
                 user.getLastName(),
                 token,
+                user.getRole().toString(),
                 "Login successful"
         );
     }
@@ -149,6 +168,93 @@ public class AuthService {
      */
     private String generateToken(String userId) {
         return "TOKEN_" + userId + "_" + UUID.randomUUID().toString();
+    }
+
+    /**
+     * Create a new DOCTOR or ADMIN account (Admin-only operation)
+     * 
+     * This method allows administrators to create doctor and admin accounts
+     * which cannot be created through public registration
+     * 
+     * @param request RegisterRequest with role = DOCTOR or ADMIN
+     * @param adminUser The User object of the admin performing this operation
+     * @return LoginResponse with new user details
+     */
+    public LoginResponse createAdminUser(RegisterRequest request, User adminUser) {
+        log.info("Admin {} creating new user with role: {} (username: {})", 
+                adminUser.getUsername(), request.getRole(), request.getUsername());
+
+        // Verify that the requester is an admin
+        if (adminUser.getRole() != UserRole.ADMIN) {
+            log.warn("SECURITY: Non-admin user {} attempted to create admin account", adminUser.getUsername());
+            throw new IllegalArgumentException("Only ADMIN users can create DOCTOR and ADMIN accounts");
+        }
+
+        // Validate input
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty");
+        }
+
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
+        // Check for duplicate username/email
+        if (userRepository.existsByUsername(request.getUsername())) {
+            log.warn("Username already exists: {}", request.getUsername());
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        if (request.getEmail() != null && userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Email already exists: {}", request.getEmail());
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        // Validate password
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        if (request.getPassword().length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters");
+        }
+
+        // Validate requested role
+        String requestedRole = (request.getRole() != null) ? request.getRole().toUpperCase() : "PATIENT";
+        if (!requestedRole.equals("DOCTOR") && !requestedRole.equals("ADMIN")) {
+            log.warn("Invalid role for admin creation: {}", requestedRole);
+            throw new IllegalArgumentException("Only DOCTOR and ADMIN roles can be created by admins");
+        }
+
+        // Create new user
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setRole(UserRole.valueOf(requestedRole));
+        user.setCreatedDate(System.currentTimeMillis());
+        user.setUpdatedDate(System.currentTimeMillis());
+
+        User savedUser = userRepository.save(user);
+        log.info("Admin {} successfully created {} account: {}", 
+                adminUser.getUsername(), requestedRole, savedUser.getId());
+
+        // Generate token
+        String token = generateToken(savedUser.getId().toString());
+
+        return new LoginResponse(
+                savedUser.getId().toString(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                token,
+                savedUser.getRole().toString(),
+                savedUser.getRole() + " account created successfully by admin"
+        );
     }
 
     /**

@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetesCare - Diabetes Prediction System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --primary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            --warning-yellow: #f59e0b;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: #f1f5f9;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid var(--primary-purple);
+        }
+
+        body.dark-mode .navbar {
+            background: #1e293b;
+            border-bottom-color: var(--primary-purple);
+        }
+
+        .navbar-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-purple);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-brand:hover {
+            color: var(--primary-blue);
+            transform: scale(1.05);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .navbar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-item:hover {
+            background: var(--light-bg);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .navbar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .notification-bell {
+            position: relative;
+            font-size: 1.5rem;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .dark-mode-toggle {
+            width: 50px;
+            height: 24px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid var(--primary-purple);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #334155;
+        }
+
+        .toggle-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-purple);
+            border-radius: 10px;
+            top: 1px;
+            left: 1px;
+            transition: left 0.3s ease;
+        }
+
+        body.dark-mode .toggle-indicator {
+            left: 27px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--card-shadow-hover);
+            z-index: 100;
+            min-width: 200px;
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .dropdown-menu {
+            background: #1e293b;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        body.dark-mode .dropdown-item {
+            border-bottom-color: #334155;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-bg);
+            padding-left: 2rem;
+            color: var(--primary-purple);
+        }
+
+        body.dark-mode .dropdown-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Page Fade */
+        .page-fade {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styles - Improved */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        body.dark-mode .card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        body.dark-mode .card-header {
+            border-bottom-color: #334155;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        body.dark-mode .card-title {
+            color: #f1f5f9;
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin: 0.5rem 0 0 0;
+        }
+
+        body.dark-mode .card-subtitle {
+            color: #cbd5e1;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        /* Summary Cards Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--primary-purple);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .summary-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-left-color: var(--primary-purple);
+        }
+
+        .summary-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-8px);
+            border-left-color: var(--primary-blue);
+        }
+
+        .summary-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .summary-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        body.dark-mode .summary-card-title {
+            color: #cbd5e1;
+        }
+
+        .summary-card-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-purple);
+            margin: 0.5rem 0;
+        }
+
+        .summary-card-subtitle {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        body.dark-mode .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #86efac;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        body.dark-mode .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        body.dark-mode .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+
+        /* Table Styles - Enhanced */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .table th:hover {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+        }
+
+        .sort-indicator {
+            margin-left: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        body.dark-mode .table td {
+            border-bottom-color: #334155;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        body.dark-mode .table tbody tr:nth-child(even) {
+            background: #0f172a;
+        }
+
+        .table tbody tr:hover {
+            background: #f0f4ff;
+            box-shadow: inset 0 0 0 1px var(--primary-purple);
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        /* Priority Bars */
+        .priority-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--danger-red), var(--primary-blue), var(--success-green));
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .priority-fill {
+            height: 100%;
+            background: var(--success-green);
+            width: 30%;
+            transition: width 0.3s ease;
+        }
+
+        /* Charts Container */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            min-height: 400px;
+        }
+
+        body.dark-mode .chart-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .chart-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .chart-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .filter-chip {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Search & Filter Section */
+        .search-filter-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        body.dark-mode .search-filter-section {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            color: #94a3b8;
+            font-size: 1.25rem;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .search-input {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .filter-chips-container {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        /* Form Styles - Improved */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        body.dark-mode .form-label {
+            color: #f1f5f9;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input-unit {
+            position: absolute;
+            right: 1rem;
+            color: #94a3b8;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .form-input-wrapper .form-input {
+            padding-right: 3rem;
+        }
+
+        .form-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--success-green), var(--warning-yellow), var(--danger-red));
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .form-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        .form-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-purple);
+            border: 2px solid var(--primary-purple);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #0f172a;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f0f4f8 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        body.dark-mode .skeleton {
+            background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            height: 120px;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-text.long {
+            width: 90%;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--light-bg);
+            border-top-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        body.dark-mode .spinner {
+            border-color: #334155;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Alert Cards */
+        .alert-card {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-left: 4px solid var(--danger-red);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+            animation: pulse-alert 2s infinite;
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
+        }
+
+        .alert-card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-card-description {
+            color: #7f1d1d;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Login Form - Glassmorphism */
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        body.dark-mode .login-card {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Notifications Dropdown Panel */
+        .notifications-panel {
+            position: fixed;
+            top: 80px;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow-hover);
+            z-index: 99;
+            overflow-y: auto;
+            transform: translateX(380px);
+            transition: transform 0.3s ease;
+        }
+
+        body.dark-mode .notifications-panel {
+            background: #1e293b;
+        }
+
+        .notifications-panel.open {
+            transform: translateX(0);
+        }
+
+        .notifications-header {
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .notifications-header {
+            border-bottom-color: #334155;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .notification-item {
+            border-bottom-color: #334155;
+        }
+
+        .notification-item:hover {
+            background: var(--light-bg);
+            padding-left: 1.5rem;
+        }
+
+        body.dark-mode .notification-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+
+            .navbar-actions {
+                gap: 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table {
+                font-size: 0.875rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.75rem;
+            }
+
+            .main-layout {
+                padding: 1rem;
+                margin-top: 100px;
+            }
+
+            .search-filter-section {
+                padding: 1rem;
+            }
+
+            .filter-chips-container {
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-actions {
+                gap: 0.5rem;
+            }
+
+            .navbar-item {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .summary-grid {
+                gap: 1rem;
+            }
+
+            .summary-card {
+                padding: 1rem;
+            }
+
+            .summary-card-value {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .notifications-panel {
+                width: 100%;
+                left: 0;
+                right: 0;
+                transform: translateX(100%);
+            }
+
+            .notifications-panel.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a class="navbar-brand" onclick="showPage('dashboardPage'); return false;">
+                🩺 DiabetesCare
+            </a>
+
+            <div class="navbar-actions">
+                <!-- Notifications -->
+                <div class="navbar-item" onclick="toggleNotificationsPanel()">
+                    <div class="notification-bell">
+                        🔔
+                        <div class="notification-badge" id="notificationCount">3</div>
+                    </div>
+                </div>
+
+                <!-- Role Badge -->
+                <div class="role-badge" id="roleDisplay">👤 Patient</div>
+
+                <!-- Dark Mode Toggle -->
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+                    <div class="toggle-indicator"></div>
+                </div>
+
+                <!-- Profile Dropdown -->
+                <div style="position: relative;">
+                    <div class="navbar-item" onclick="toggleProfileMenu()">
+                        <span id="profileAvatar" style="font-size: 1.5rem;">👤</span>
+                    </div>
+                    <div id="profileDropdown" class="dropdown-menu">
+                        <div class="dropdown-item" onclick="showPage('profilePage')">👤 My Profile</div>
+                        <div class="dropdown-item" onclick="toggleDarkMode()">🌙 Toggle Theme</div>
+                        <div class="dropdown-item" style="color: var(--danger-red);" onclick="logout()">🚪 Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- NOTIFICATIONS PANEL -->
+    <div id="notificationsPanel" class="notifications-panel">
+        <div class="notifications-header">
+            <h3 style="margin: 0; font-size: 1rem; font-weight: 700;">Notifications</h3>
+            <button onclick="closeNotificationsPanel()" style="background: none; border: none; cursor: pointer; font-size: 1.25rem;">✕</button>
+        </div>
+        <div id="notificationsList">
+            <div class="notification-item">
+                <div style="font-weight: 700; margin-bottom: 0.25rem;">⚠ High Risk Alert</div>
+                <div style="font-size: 0.875rem; color: #64748b;">Patient risk level increased</div>
+            </div>
+            <div class="notification-item">
+                <div style="font-weight: 700; margin-bottom: 0.25rem;">📋 Follow-up Reminder</div>
+                <div style="font-size: 0.875rem; color: #64748b;">Patient review due today</div>
+            </div>
+            <div class="notification-item">
+                <div style="font-weight: 700; margin-bottom: 0.25rem;">✅ New Prediction</div>
+                <div style="font-size: 0.875rem; color: #64748b;">Prediction analysis completed</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4 page-fade">
+        <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+            <div class="absolute top-10 left-10 w-20 h-20 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-slow"></div>
+            <div class="absolute bottom-10 right-10 w-20 h-20 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-bounce-slow" style="animation-delay: 2s;"></div>
+        </div>
+
+        <div style="position: relative; z-index: 10; width: 100%; max-width: 400px;">
+            <div class="login-card">
+                <!-- Role Toggle -->
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <button type="button" id="rolePatientBtn" onclick="setLoginRole('PATIENT')" 
+                        style="flex: 1; padding: 0.75rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); color: white;">
+                        👤 Patient
+                    </button>
+                    <button type="button" id="roleDoctorBtn" onclick="setLoginRole('DOCTOR')" 
+                        style="flex: 1; padding: 0.75rem; border-radius: 0.5rem; border: 2px solid var(--primary-purple); font-weight: 600; cursor: pointer; background: transparent; color: var(--primary-purple);">
+                        🩺 Doctor
+                    </button>
+                </div>
+
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;" id="roleIcon">👤</div>
+                    <h1 id="roleTitle" style="margin: 0; font-size: 1.75rem; font-weight: 700; color: var(--primary-purple);">Patient Login</h1>
+                    <p id="roleSubtitle" style="margin: 0.5rem 0 0 0; color: #64748b;">Access your health dashboard</p>
+                </div>
+
+                <!-- Alert -->
+                <div id="loginAlert" style="display: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center; color: white; background: var(--danger-red);"></div>
+
+                <!-- Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <input type="hidden" id="loginRole" value="PATIENT">
+
+                    <div class="form-group">
+                        <label class="form-label">👤 Username</label>
+                        <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🔐 Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin: 0;">
+                            <input type="checkbox" id="rememberMe" style="cursor: pointer;">
+                            <span style="font-size: 0.875rem; color: #64748b;">Remember me</span>
+                        </label>
+                        <a href="#" style="font-size: 0.875rem; color: var(--primary-purple); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                    </div>
+
+                    <div id="loginLoading" style="display: none; text-align: center; padding: 1rem;">
+                        <div class="spinner"></div>
+                    </div>
+
+                    <button type="submit" id="loginSubmit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        Sign In →
+                    </button>
+                </form>
+
+                <!-- Demo Credentials Info -->
+                <div style="margin-top: 1rem; padding: 1rem; background: #dbeafe; border-radius: 0.5rem; border-left: 4px solid var(--primary-blue);">
+                    <p style="margin: 0; font-size: 0.75rem; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em;">💡 Demo Credentials:</p>
+                    <div style="font-size: 0.75rem; color: #1e40af; margin-top: 0.5rem; line-height: 1.5;">
+                        <p style="margin: 0;"><span style="font-weight: 600;">Patient:</span> user@gmail.com / password123</p>
+                        <p style="margin: 0;"><span style="font-weight: 600;">Doctor:</span> doctor@gmail.com / password123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="hidden page-fade">
+        <div class="main-layout">
+
+            <!-- Search & Filter Section -->
+            <div class="search-filter-section">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search patients by name or ID...">
+                </div>
+                <div class="filter-chips-container">
+                    <div class="filter-chip active" onclick="applyFilter('all')">📊 All Patients</div>
+                    <div class="filter-chip" onclick="applyFilter('high-risk')">🔴 High Risk</div>
+                    <div class="filter-chip" onclick="applyFilter('medium-risk')">🟡 Medium Risk</div>
+                    <div class="filter-chip" onclick="applyFilter('low-risk')">🟢 Low Risk</div>
+                </div>
+            </div>
+
+            <!-- Summary Cards Grid -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <div class="summary-card-title">Total Patients</div>
+                            <div class="summary-card-value">1,245</div>
+                        </div>
+                        <div class="card-icon">👥</div>
+                    </div>
+                    <div class="priority-bar">
+                        <div class="priority-fill" style="width: 70%; background: var(--success-green);"></div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <div class="summary-card-title">High Risk</div>
+                            <div class="summary-card-value">143</div>
+                        </div>
+                        <div class="card-icon">🚨</div>
+                    </div>
+                    <div class="priority-bar">
+                        <div class="priority-fill" style="width: 40%; background: var(--danger-red);"></div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <div class="summary-card-title">Predictions Today</div>
+                            <div class="summary-card-value">34</div>
+                        </div>
+                        <div class="card-icon">📊</div>
+                    </div>
+                    <div class="priority-bar">
+                        <div class="priority-fill" style="width: 85%; background: var(--primary-blue);"></div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <div class="summary-card-title">Accuracy Rate</div>
+                            <div class="summary-card-value">94.2%</div>
+                        </div>
+                        <div class="card-icon">✅</div>
+                    </div>
+                    <div class="priority-bar">
+                        <div class="priority-fill" style="width: 94%; background: var(--success-green);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Risk Distribution</h3>
+                            <p class="card-subtitle">Patient risk levels over time</p>
+                        </div>
+                    </div>
+                    <div class="chart-filters">
+                        <div class="filter-chip active" onclick="updateChartFilter(this, 'risk', '7d')">📅 7D</div>
+                        <div class="filter-chip" onclick="updateChartFilter(this, 'risk', '30d')">📅 30D</div>
+                        <div class="filter-chip" onclick="updateChartFilter(this, 'risk', 'yearly')">📅 Yearly</div>
+                    </div>
+                    <canvas id="riskChart"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Feature Importance</h3>
+                            <p class="card-subtitle">ML model insights</p>
+                        </div>
+                    </div>
+                    <div class="chart-filters">
+                        <div class="filter-chip active" onclick="updateChartFilter(this, 'features', '7d')">📅 7D</div>
+                        <div class="filter-chip" onclick="updateChartFilter(this, 'features', '30d')">📅 30D</div>
+                        <div class="filter-chip" onclick="updateChartFilter(this, 'features', 'yearly')">📅 Yearly</div>
+                    </div>
+                    <canvas id="featuresChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">🚨 High Priority Alerts</h2>
+                <div class="alert-card">
+                    <div class="alert-card-title">⚠ Patient Reddy - Urgent Consultation Needed</div>
+                    <div class="alert-card-description">Risk level increased to 78%. Immediate follow-up recommended.</div>
+                    <button class="btn btn-danger">Review Now →</button>
+                </div>
+            </div>
+
+            <!-- Patients Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">Patient Registry</h3>
+                        <p class="card-subtitle">All registered patients and their health status</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showPage('predictionPage')">+ New Prediction</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">Patient Name <span class="sort-indicator">↕</span></th>
+                                <th onclick="sortTable(1)">Age <span class="sort-indicator">↕</span></th>
+                                <th onclick="sortTable(2)">Risk Level <span class="sort-indicator">↕</span></th>
+                                <th onclick="sortTable(3)">Last Prediction <span class="sort-indicator">↕</span></th>
+                                <th onclick="sortTable(4)">Status <span class="sort-indicator">↕</span></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rajesh Kumar</td>
+                                <td>45</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="priority-bar" style="flex: 1; height: 6px;">
+                                            <div class="priority-fill" style="width: 78%; background: var(--danger-red);"></div>
+                                        </div>
+                                        <span class="badge badge-danger">High</span>
+                                    </div>
+                                </td>
+                                <td>2 hours ago</td>
+                                <td><span class="badge badge-danger">🔴 At Risk</span></td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="viewPatientDetails('patient-1')">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Priya Sharma</td>
+                                <td>38</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="priority-bar" style="flex: 1; height: 6px;">
+                                            <div class="priority-fill" style="width: 45%; background: var(--warning-yellow);"></div>
+                                        </div>
+                                        <span class="badge badge-warning">Medium</span>
+                                    </div>
+                                </td>
+                                <td>5 hours ago</td>
+                                <td><span class="badge badge-warning">🟡 Monitor</span></td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="viewPatientDetails('patient-2')">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Amit Singh</td>
+                                <td>52</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <div class="priority-bar" style="flex: 1; height: 6px;">
+                                            <div class="priority-fill" style="width: 25%; background: var(--success-green);"></div>
+                                        </div>
+                                        <span class="badge badge-success">Low</span>
+                                    </div>
+                                </td>
+                                <td>1 day ago</td>
+                                <td><span class="badge badge-success">🟢 Healthy</span></td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="viewPatientDetails('patient-3')">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+                    <button class="filter-chip">← Prev</button>
+                    <button class="filter-chip active">1</button>
+                    <button class="filter-chip">2</button>
+                    <button class="filter-chip">3</button>
+                    <button class="filter-chip">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREDICTION PAGE -->
+    <div id="predictionPage" class="hidden page-fade">
+        <div class="main-layout">
+            <div class="card" style="max-width: 600px; margin: 3rem auto;">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">New Diabetes Prediction</h3>
+                        <p class="card-subtitle">Enter patient health data</p>
+                    </div>
+                </div>
+
+                <form id="predictionForm" onsubmit="handlePrediction(event)">
+                    <div class="form-group">
+                        <label class="form-label">Glucose Level (mg/dL)</label>
+                        <div class="form-input-wrapper">
+                            <input type="number" class="form-input" min="0" max="300" value="120" required>
+                            <span class="form-input-unit">mg/dL</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Blood Pressure Systolic (mmHg)</label>
+                        <div class="form-input-wrapper">
+                            <input type="number" class="form-input" min="0" max="200" value="120" required>
+                            <span class="form-input-unit">mmHg</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">BMI (kg/m²)</label>
+                        <div class="form-input-wrapper">
+                            <input type="number" class="form-input" min="10" max="50" step="0.1" value="24.5" required>
+                            <span class="form-input-unit">kg/m²</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Risk Level Prediction (Slider)</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <input type="range" class="form-slider" id="riskSlider" min="0" max="100" value="50">
+                            <span id="riskValue" style="font-weight: 700; color: var(--primary-purple); min-width: 50px;">50%</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Predict →</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="showPage('dashboardPage')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="profilePage" class="hidden page-fade">
+        <div class="main-layout">
+            <div class="card" style="max-width: 600px; margin: 3rem auto;">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">My Profile</h3>
+                        <p class="card-subtitle">Manage your account settings</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;" id="profileAvatar">👤</div>
+                    <h2 id="profileName" style="margin: 0; font-size: 1.5rem; font-weight: 700;">John Doe</h2>
+                    <p id="profileRole" style="margin: 0.5rem 0; color: #64748b;">Doctor</p>
+                </div>
+
+                <div style="space-y: 1.5rem;">
+                    <div style="padding: 1rem; background: var(--light-bg); border-radius: 0.75rem; margin-bottom: 1rem;">
+                        <p style="margin: 0; font-size: 0.875rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Email</p>
+                        <p id="profileEmail" style="margin: 0.5rem 0 0 0; font-size: 1rem;">doctor@example.com</p>
+                    </div>
+
+                    <div style="padding: 1rem; background: var(--light-bg); border-radius: 0.75rem;">
+                        <p style="margin: 0; font-size: 0.875rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Member Since</p>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 1rem;">January 15, 2024</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 2rem; justify-content: center;" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Page Navigation
+        function showPage(pageName) {
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            const selectedPage = document.getElementById(pageName);
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden');
+            }
+        }
+
+        // Login Role Selection
+        function setLoginRole(role) {
+            document.getElementById('loginRole').value = role;
+
+            if (role === 'PATIENT') {
+                document.getElementById('rolePatientBtn').style.background = 'linear-gradient(135deg, var(--primary-purple), var(--primary-blue))';
+                document.getElementById('rolePatientBtn').style.color = 'white';
+                document.getElementById('rolePatientBtn').style.border = 'none';
+
+                document.getElementById('roleDoctorBtn').style.background = 'transparent';
+                document.getElementById('roleDoctorBtn').style.color = 'var(--primary-purple)';
+                document.getElementById('roleDoctorBtn').style.border = '2px solid var(--primary-purple)';
+
+                document.getElementById('roleIcon').innerText = '👤';
+                document.getElementById('roleTitle').innerText = 'Patient Login';
+                document.getElementById('roleSubtitle').innerText = 'Access your health dashboard';
+            } else {
+                document.getElementById('roleDoctorBtn').style.background = 'linear-gradient(135deg, var(--primary-purple), var(--primary-blue))';
+                document.getElementById('roleDoctorBtn').style.color = 'white';
+                document.getElementById('roleDoctorBtn').style.border = 'none';
+
+                document.getElementById('rolePatientBtn').style.background = 'transparent';
+                document.getElementById('rolePatientBtn').style.color = 'var(--primary-purple)';
+                document.getElementById('rolePatientBtn').style.border = '2px solid var(--primary-purple)';
+
+                document.getElementById('roleIcon').innerText = '🩺';
+                document.getElementById('roleTitle').innerText = 'Doctor Login';
+                document.getElementById('roleSubtitle').innerText = 'Access patient management';
+            }
+        }
+
+        // Profile Menu Toggle
+        function toggleProfileMenu() {
+            document.getElementById('profileDropdown').classList.toggle('active');
+        }
+
+        // Notifications Panel Toggle
+        function toggleNotificationsPanel() {
+            document.getElementById('notificationsPanel').classList.toggle('open');
+        }
+
+        function closeNotificationsPanel() {
+            document.getElementById('notificationsPanel').classList.remove('open');
+        }
+
+        // Login Handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginRole').value;
+
+            // Demo credentials
+            if ((username === 'user@gmail.com' || username === 'patient') && password === 'password123') {
+                localStorage.setItem('currentUser', JSON.stringify({ id: 1, username, role: 'PATIENT' }));
+                localStorage.setItem('token', 'demo_token_patient');
+                showPage('dashboardPage');
+            } else if ((username === 'doctor@gmail.com' || username === 'doctor') && password === 'password123') {
+                localStorage.setItem('currentUser', JSON.stringify({ id: 2, username, role: 'DOCTOR' }));
+                localStorage.setItem('token', 'demo_token_doctor');
+                showPage('dashboardPage');
+            } else {
+                document.getElementById('loginAlert').style.display = 'block';
+                document.getElementById('loginAlert').innerText = 'Invalid credentials. Try: user@gmail.com / password123';
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('token');
+            showPage('loginPage');
+        }
+
+        // Risk Slider Update
+        document.getElementById('riskSlider')?.addEventListener('input', function() {
+            document.getElementById('riskValue').innerText = this.value + '%';
+        });
+
+        // Filter Functions
+        function applyFilter(filterType) {
+            document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function sortTable(columnIndex) {
+            // Sorting logic
+            console.log('Sorting by column:', columnIndex);
+        }
+
+        function updateChartFilter(element, chartType, timeRange) {
+            document.querySelectorAll('.chart-filters .filter-chip').forEach(chip => chip.classList.remove('active'));
+            element.classList.add('active');
+            // Update chart data
+        }
+
+        // Handle Prediction
+        async function handlePrediction(event) {
+            event.preventDefault();
+            // Prediction logic
+            showPage('dashboardPage');
+        }
+
+        // View Patient Details
+        function viewPatientDetails(patientId) {
+            console.log('Viewing patient:', patientId);
+        }
+
+        // Initialize Charts on page load
+        window.addEventListener('load', () => {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const token = localStorage.getItem('token');
+
+            if (user && user.id && token) {
+                document.getElementById('roleDisplay').innerText = (user.role === 'DOCTOR' ? '🩺' : '👤') + ' ' + user.role;
+                showPage('dashboardPage');
+                initializeCharts();
+            } else {
+                showPage('loginPage');
+            }
+
+            // Set initial role
+            setLoginRole('PATIENT');
+        });
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Risk Distribution Chart
+            const riskCtx = document.getElementById('riskChart');
+            if (riskCtx) {
+                new Chart(riskCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'High Risk',
+                            data: [12, 19, 3, 5, 2, 3, 8],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Medium Risk',
+                            data: [5, 10, 15, 8, 12, 9, 6],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Low Risk',
+                            data: [20, 15, 18, 25, 22, 20, 19],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: { font: { size: 12, weight: 'bold' } }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Features Chart
+            const featuresCtx = document.getElementById('featuresChart');
+            if (featuresCtx) {
+                new Chart(featuresCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Glucose', 'BMI', 'Age', 'BloodPressure', 'Insulin'],
+                        datasets: [{
+                            label: 'Importance Score',
+                            data: [85, 72, 68, 45, 38],
+                            backgroundColor: ['#3b82f6', '#7c3aed', '#10b981', '#f59e0b', '#ef4444'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.navbar-item')) {
+                document.getElementById('profileDropdown')?.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

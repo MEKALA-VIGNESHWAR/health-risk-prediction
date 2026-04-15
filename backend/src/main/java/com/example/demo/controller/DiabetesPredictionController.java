@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DiabetesPredictionController - REST endpoints for diabetes prediction
@@ -74,16 +75,32 @@ public class DiabetesPredictionController {
      * Get prediction history for a specific user
      */
     @GetMapping("/history/user/{userId}")
-    public ResponseEntity<List<DiabetesPrediction>> getPredictionHistory(
+    public ResponseEntity<?> getPredictionHistory(
             @PathVariable String userId) {
         log.info("GET /api/predict/history/user/{} - Fetching prediction history", userId);
         
         try {
+            // Validate UUID format
+            if (userId == null || userId.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ErrorResponse("User ID is required", 400));
+            }
+
+            UUID userUUID = UUID.fromString(userId);
+            log.info("Converted userId to UUID: {}", userUUID);
+
             List<DiabetesPrediction> history = predictionService.getPredictionHistory(userId);
+            log.info("Found {} predictions for user {}", history.size(), userId);
+            
             return ResponseEntity.ok(history);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid UUID format for userId: {}", userId);
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Invalid user ID format", 400));
         } catch (Exception e) {
-            log.error("Error fetching prediction history: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error fetching prediction history: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Error fetching history: " + e.getMessage(), 500));
         }
     }
 
@@ -120,6 +137,25 @@ public class DiabetesPredictionController {
         } catch (Exception e) {
             log.error("Error fetching prediction: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Error Response DTO
+    static class ErrorResponse {
+        public String message;
+        public int status;
+
+        public ErrorResponse(String message, int status) {
+            this.message = message;
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public int getStatus() {
+            return status;
         }
     }
 

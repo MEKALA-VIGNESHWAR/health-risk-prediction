@@ -39,6 +39,10 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.PATIENT;
+
     @Column(name = "created_date", nullable = false, updatable = false)
     private Long createdDate;
 

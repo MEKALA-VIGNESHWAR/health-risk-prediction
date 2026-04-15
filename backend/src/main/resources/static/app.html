@@ -480,7 +480,7 @@
             <!-- Prediction Card -->
             <div class="card">
                 <h2>🔍 Diabetes Prediction</h2>
-                <form id="predictionForm" onsubmit="handlePrediction(event)">
+                <form onsubmit="handlePrediction(event)">
                     <div class="form-group-dashboard">
                         <label for="pregnancies">Pregnancies</label>
                         <input type="number" id="pregnancies" min="0" placeholder="Enter number of pregnancies" required>
@@ -529,29 +529,6 @@
                     <div class="result-title">Prediction Result</div>
                     <div class="result-value" id="resultValue"></div>
                     <div class="result-message" id="resultMessage"></div>
-                </div>
-            </div>
-
-            <!-- Statistics Card -->
-            <div class="card">
-                <h2>📈 Your Statistics</h2>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                    <div style="background: #f0f4ff; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalPredictions">0</div>
-                        <div style="color: #666; font-size: 14px;">Total Predictions</div>
-                    </div>
-                    <div style="background: #fef3f0; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #ef4444;" id="highRiskCount">0</div>
-                        <div style="color: #666; font-size: 14px;">High Risk</div>
-                    </div>
-                    <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="lowRiskCount">0</div>
-                        <div style="color: #666; font-size: 14px;">Low Risk</div>
-                    </div>
-                    <div style="background: #fffbf0; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #f59e0b;" id="riskRate">0%</div>
-                        <div style="color: #666; font-size: 14px;">Risk Rate</div>
-                    </div>
                 </div>
             </div>
 
@@ -646,14 +623,12 @@
                         username,
                         email,
                         password,
-                        confirmPassword,
                         firstName,
                         lastName
                     })
                 });
 
                 const data = await response.json();
-                console.log('Register response:', data);
 
                 if (response.ok) {
                     showSuccess('registerSuccess', 'Registration successful! Please login.');
@@ -663,7 +638,6 @@
                     showError('registerError', data.message || 'Registration failed');
                 }
             } catch (error) {
-                console.error('Register error:', error);
                 showError('registerError', 'Error: ' + error.message);
             }
         }
@@ -683,18 +657,9 @@
                 });
 
                 const data = await response.json();
-                console.log('Login response:', data);
 
                 if (response.ok) {
-                    // Extract user data - backend returns LoginResponse directly
-                    currentUser = {
-                        id: data.userId,
-                        username: data.username,
-                        email: data.email,
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                        token: data.token
-                    };
+                    currentUser = data.data || { username };
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     showSuccess('loginSuccess', 'Login successful!');
                     setTimeout(() => showDashboard(), 1000);
@@ -702,7 +667,6 @@
                     showError('loginError', data.message || 'Login failed');
                 }
             } catch (error) {
-                console.error('Login error:', error);
                 showError('loginError', 'Error: ' + error.message);
             }
         }
@@ -733,7 +697,7 @@
             document.getElementById('predictionResult').classList.remove('show');
 
             try {
-                const response = await fetch(`${API_BASE}/predict/diabetes`, {
+                const response = await fetch(`${API_BASE}/predictions/predict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -744,8 +708,7 @@
                         insulin,
                         bmi,
                         diabetesPedigreeFunction,
-                        age,
-                        userId: currentUser.id  // Send the user ID
+                        age
                     })
                 });
 
@@ -757,7 +720,7 @@
                     const resultElement = document.getElementById('resultValue');
                     const messageElement = document.getElementById('resultMessage');
 
-                    if (result.prediction === 1 || result.predictionResult === 1) {
+                    if (result.predictionResult === 1) {
                         resultElement.textContent = '⚠️ High Risk';
                         messageElement.textContent = 'The model predicts high risk of diabetes. Please consult a healthcare professional.';
                         messageElement.className = 'result-message risk-high';
@@ -768,79 +731,48 @@
                     }
 
                     document.getElementById('predictionResult').classList.add('show');
-                    
-                    // Clear form
-                    document.getElementById('predictionForm').reset();
-                    
-                    // Load updated history
-                    setTimeout(() => loadHistory(), 500);
+                    loadHistory();
                 } else {
                     showError('dashboard', data.message || 'Prediction failed');
                 }
             } catch (error) {
                 document.getElementById('predictionLoading').style.display = 'none';
-                console.error('Prediction error:', error);
                 showError('dashboard', 'Error: ' + error.message);
             }
         }
 
         async function loadHistory() {
-            if (!currentUser || !currentUser.id) {
-                console.log('No current user or user ID');
-                return;
-            }
+            if (!currentUser) return;
 
             try {
-                const response = await fetch(`${API_BASE}/predict/history/user/${currentUser.id}`, {
+                const response = await fetch(`${API_BASE}/predictions/user/${currentUser.id || currentUser.username}`, {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
-                const predictions = await response.json();
-                console.log('Predictions response:', predictions);
+                const data = await response.json();
 
-                const historyList = document.getElementById('historyList');
+                if (response.ok) {
+                    const predictions = data.data || data || [];
+                    const historyList = document.getElementById('historyList');
 
-                if (response.ok && Array.isArray(predictions) && predictions.length > 0) {
-                    // Calculate Statistics
-                    const totalPredictions = predictions.length;
-                    const highRiskCount = predictions.filter(p => p.predictionResult === 1).length;
-                    const lowRiskCount = predictions.filter(p => p.predictionResult === 0).length;
-                    const riskRate = ((highRiskCount / totalPredictions) * 100).toFixed(1);
-
-                    // Update Statistics
-                    document.getElementById('totalPredictions').textContent = totalPredictions;
-                    document.getElementById('highRiskCount').textContent = highRiskCount;
-                    document.getElementById('lowRiskCount').textContent = lowRiskCount;
-                    document.getElementById('riskRate').textContent = riskRate + '%';
-
-                    // Display History (sorted by newest first)
-                    const sortedPredictions = predictions.sort((a, b) => {
-                        const dateA = new Date(a.createdDate || a.timestamp);
-                        const dateB = new Date(b.createdDate || b.timestamp);
-                        return dateB - dateA;
-                    });
-
-                    historyList.innerHTML = sortedPredictions.map(pred => `
-                        <div class="history-item">
-                            <div class="history-date">${new Date(pred.createdDate || pred.timestamp).toLocaleDateString()} ${new Date(pred.createdDate || pred.timestamp).toLocaleTimeString()}</div>
-                            <div class="history-result">
-                                Glucose: ${pred.glucose} | Age: ${pred.age} | BMI: ${pred.bmi.toFixed(1)}
+                    if (Array.isArray(predictions) && predictions.length > 0) {
+                        historyList.innerHTML = predictions.map(pred => `
+                            <div class="history-item">
+                                <div class="history-date">${new Date(pred.createdDate || pred.timestamp).toLocaleDateString()}</div>
+                                <div class="history-result">
+                                    Glucose: ${pred.glucose} | Age: ${pred.age} | BMI: ${pred.bmi}
+                                </div>
+                                <span class="history-status ${pred.predictionResult === 1 ? 'status-high' : 'status-low'}">
+                                    ${pred.predictionResult === 1 ? '⚠️ High Risk' : '✅ Low Risk'}
+                                </span>
                             </div>
-                            <span class="history-status ${pred.predictionResult === 1 ? 'status-high' : 'status-low'}">
-                                ${pred.predictionResult === 1 ? '⚠️ High Risk' : '✅ Low Risk'}
-                            </span>
-                        </div>
-                    `).join('');
-                } else {
-                    historyList.innerHTML = '<p style="color: #999; text-align: center;">No predictions yet. Make your first prediction!</p>';
-                    document.getElementById('totalPredictions').textContent = '0';
-                    document.getElementById('highRiskCount').textContent = '0';
-                    document.getElementById('lowRiskCount').textContent = '0';
-                    document.getElementById('riskRate').textContent = '0%';
+                        `).join('');
+                    } else {
+                        historyList.innerHTML = '<p style="color: #999; text-align: center;">No predictions yet. Make your first prediction!</p>';
+                    }
                 }
             } catch (error) {
                 console.log('Could not load history:', error.message);
-                document.getElementById('historyList').innerHTML = '<p style="color: #999; text-align: center;">Error loading predictions</p>';
             }
         }
     </script>

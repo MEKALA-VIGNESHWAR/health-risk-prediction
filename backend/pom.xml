@@ -51,7 +51,7 @@
             <version>42.7.3</version>
         </dependency>
 
-        <!-- H2 Database for local development and testing -->
+        <!-- H2 Database for local development (fallback) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -114,6 +114,39 @@
 
     <build>
         <plugins>
+            <!-- Copy frontend files to static folder -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-frontend</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../frontend</directory>
+                                    <excludes>
+                                        <exclude>node_modules/**</exclude>
+                                        <exclude>.vscode/**</exclude>
+                                        <exclude>.git/**</exclude>
+                                        <exclude>.env*</exclude>
+                                        <exclude>*.log</exclude>
+                                        <exclude>package*.json</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

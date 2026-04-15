@@ -131,6 +131,107 @@ public class AuthController {
     }
 
     /**
+     * Create DOCTOR or ADMIN account (Admin-only)
+     * POST /api/auth/admin/create-user
+     * 
+     * Request Header: Authorization: Bearer TOKEN_userId_uuid
+     * 
+     * Request Body:
+     * {
+     *   "firstName": "Dr. Jane",
+     *   "lastName": "Smith",
+     *   "username": "dr_smith",
+     *   "email": "jane@hospital.com",
+     *   "password": "secure123",
+     *   "confirmPassword": "secure123",
+     *   "role": "DOCTOR" or "ADMIN"
+     * }
+     * 
+     * Response:
+     * {
+     *   "id": "uuid",
+     *   "username": "dr_smith",
+     *   "email": "jane@hospital.com",
+     *   "firstName": "Dr. Jane",
+     *   "lastName": "Smith",
+     *   "token": "TOKEN_...",
+     *   "role": "DOCTOR",
+     *   "message": "DOCTOR account created successfully by admin"
+     * }
+     */
+    @PostMapping("/admin/create-user")
+    public ResponseEntity<?> createAdminUser(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody RegisterRequest request) {
+        try {
+            log.info("Admin user creation request for role: {}, username: {}", request.getRole(), request.getUsername());
+
+            // Extract token from Authorization header
+            if (authHeader == null || authHeader.trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Authorization token is required", HttpStatus.UNAUTHORIZED.value()));
+            }
+
+            String token = authHeader;
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // Get admin user from token
+            com.example.demo.entity.User adminUser = authService.getUserFromToken(token);
+            if (adminUser == null) {
+                log.warn("Invalid token for admin user creation");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Invalid or expired token", HttpStatus.UNAUTHORIZED.value()));
+            }
+
+            // Verify admin role
+            if (adminUser.getRole() != com.example.demo.entity.UserRole.ADMIN) {
+                log.warn("Non-admin user {} attempted to create admin account", adminUser.getUsername());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ErrorResponse("Only ADMIN users can create DOCTOR and ADMIN accounts", 
+                                HttpStatus.FORBIDDEN.value()));
+            }
+
+            // Validate request
+            if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ErrorResponse("Username is required", HttpStatus.BAD_REQUEST.value()));
+            }
+
+            if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ErrorResponse("Password is required", HttpStatus.BAD_REQUEST.value()));
+            }
+
+            if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ErrorResponse("Email is required", HttpStatus.BAD_REQUEST.value()));
+            }
+
+            if (request.getRole() == null || request.getRole().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(new ErrorResponse("Role is required (DOCTOR or ADMIN)", HttpStatus.BAD_REQUEST.value()));
+            }
+
+            // Create the new admin/doctor user
+            LoginResponse response = authService.createAdminUser(request, adminUser);
+            log.info("Admin user created successfully by {}: {}", adminUser.getUsername(), request.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Admin user creation failed: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        } catch (Exception e) {
+            log.error("Admin user creation error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("User creation failed: " + e.getMessage(), 
+                            HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+    }
+
+    /**
      * Error response class
      */
     @lombok.Data
