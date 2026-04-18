@@ -3,11 +3,13 @@ package com.example.demo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 import java.util.Map;
 
 /**
- * DiabetesPredictionResponse DTO - Enhanced with advanced ML metrics
- * Includes: predictions, probabilities, confidence levels, risk levels, and feature importance
+ * DiabetesPredictionResponse DTO - Industry-level prediction response
+ * Includes: predictions, probabilities, confidence, risk, feature importance,
+ * abnormal values, recommendations, and previous comparison
  */
 @Data
 @NoArgsConstructor
@@ -26,8 +28,9 @@ public class DiabetesPredictionResponse {
     // ===== CONFIDENCE & RISK =====
     private Double confidenceLevel;
     private String confidenceText;
-    private String risk;  // LOW, MEDIUM, HIGH, CRITICAL (from new riskLevel field)
+    private String risk;       // LOW, MEDIUM, HIGH, CRITICAL
     private String riskLevel;  // Preferred over 'risk'
+    private Double riskPercentage;  // 0-100
 
     // ===== MODEL INFO =====
     private String modelUsed;
@@ -35,6 +38,15 @@ public class DiabetesPredictionResponse {
 
     // ===== FEATURE IMPORTANCE =====
     private Map<String, Double> featureImportance;
+
+    // ===== ABNORMAL VALUES =====
+    private Map<String, Object> abnormalValues;
+
+    // ===== SMART RECOMMENDATIONS =====
+    private List<Map<String, String>> recommendations;
+
+    // ===== PREVIOUS COMPARISON =====
+    private Map<String, Object> previousComparison;
 
     // ===== METADATA =====
     private Long timestamp;
@@ -52,5 +64,6 @@ public class DiabetesPredictionResponse {
         this.message = message;
         this.risk = prediction == 1 ? "HIGH" : "LOW";
         this.riskLevel = prediction == 1 ? "HIGH" : "LOW";
+        this.riskPercentage = probDiab != null ? probDiab * 100.0 : 0.0;
     }
 }

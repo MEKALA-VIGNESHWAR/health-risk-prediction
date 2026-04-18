@@ -40,8 +40,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/verify").permitAll()
-                .requestMatchers("/api/predict/diabetes").permitAll()
-                .requestMatchers("/api/predict/heart").permitAll()
+                .requestMatchers("/api/predict/**").permitAll()
+                .requestMatchers("/api/alerts/**").permitAll()
+                .requestMatchers("/api/doctor/**").permitAll()
+                .requestMatchers("/api/dashboard/**").permitAll()
+                .requestMatchers("/api/notes/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 
                 // Require authentication for other API endpoints
