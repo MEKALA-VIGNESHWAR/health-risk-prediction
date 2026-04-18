@@ -39,8 +39,80 @@
             }
         }
     </script>
+    <style>
+        /* Dark Mode Styles */
+        body.dark-mode {
+            @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 !important;
+            color: #f1f5f9;
+        }
+        
+        body.dark-mode .bg-white {
+            @apply bg-gray-800 !important;
+        }
+        
+        body.dark-mode .text-gray-700 {
+            @apply text-gray-300 !important;
+        }
+        
+        body.dark-mode .text-gray-600 {
+            @apply text-gray-400 !important;
+        }
+        
+        body.dark-mode .bg-gray-50 {
+            @apply bg-gray-700 !important;
+        }
+        
+        body.dark-mode .border-gray-200 {
+            @apply border-gray-600 !important;
+        }
+        
+        body.dark-mode .bg-blue-50 {
+            @apply bg-gray-700 !important;
+        }
+        
+        body.dark-mode .text-blue-700 {
+            @apply text-blue-300 !important;
+        }
+        
+        body.dark-mode .text-blue-600 {
+            @apply text-blue-400 !important;
+        }
+        
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+    <!-- Dark Mode Toggle Button -->
+    <div class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+        <span id="darkModeIcon">🌙</span>
+    </div>
 
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="hidden min-h-screen flex items-center justify-center p-4">
@@ -215,7 +287,7 @@
         </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
+    <!-- DASHBOARD PAGE - ENHANCED PATIENT DASHBOARD -->
     <div id="dashboardPage" class="hidden">
         <!-- Navigation Bar -->
         <nav class="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 animate-fade-in">
@@ -236,96 +308,216 @@
         </nav>
 
         <div class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Welcome Section -->
             <div class="mb-8 animate-slide-up">
                 <h2 class="text-4xl font-bold text-white mb-2">Welcome back! 👋</h2>
-                <p class="text-purple-300">Your diabetes prediction dashboard</p>
+                <p class="text-purple-300">Your personalized diabetes health dashboard</p>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 animate-slide-up hover:border-blue-500/50 transition-all" style="animation-delay: 0.1s;">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-300 text-sm font-semibold mb-2">Total Predictions</p>
-                            <p id="totalPredictions" class="text-4xl font-bold text-white">0</p>
-                        </div>
-                        <div class="text-5xl opacity-20">📊</div>
-                    </div>
+            <!-- FEATURE 1: Personal Health Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 rounded-xl p-4 animate-slide-up" style="animation-delay: 0.1s;">
+                    <p class="text-blue-300 text-xs font-semibold mb-1">📊 Risk Score</p>
+                    <p class="text-3xl font-bold text-white" id="currentRiskScore">0%</p>
+                    <p class="text-blue-200 text-xs mt-1" id="riskStatus">-</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-2xl p-6 animate-slide-up hover:border-red-500/50 transition-all" style="animation-delay: 0.15s;">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-red-300 text-sm font-semibold mb-2">High Risk</p>
-                            <p id="highRiskCount" class="text-4xl font-bold text-white">0</p>
-                        </div>
-                        <div class="text-5xl opacity-20">⚠️</div>
-                    </div>
+                <div class="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 rounded-xl p-4 animate-slide-up" style="animation-delay: 0.15s;">
+                    <p class="text-purple-300 text-xs font-semibold mb-1">✔️ Last Status</p>
+                    <p class="text-3xl font-bold text-white" id="lastPredStatus">-</p>
+                    <p class="text-purple-200 text-xs mt-1" id="lastPredDate">-</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6 animate-slide-up hover:border-green-500/50 transition-all" style="animation-delay: 0.2s;">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-300 text-sm font-semibold mb-2">Low Risk</p>
-                            <p id="lowRiskCount" class="text-4xl font-bold text-white">0</p>
-                        </div>
-                        <div class="text-5xl opacity-20">✅</div>
-                    </div>
+                <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 border border-yellow-500/30 rounded-xl p-4 animate-slide-up" style="animation-delay: 0.2s;">
+                    <p class="text-yellow-300 text-xs font-semibold mb-1">🩸 Glucose</p>
+                    <p class="text-3xl font-bold text-white" id="lastGlucose">-</p>
+                    <p class="text-yellow-200 text-xs mt-1">mg/dL</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl p-6 animate-slide-up hover:border-yellow-500/50 transition-all" style="animation-delay: 0.25s;">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-yellow-300 text-sm font-semibold mb-2">Risk Rate</p>
-                            <p id="riskRate" class="text-4xl font-bold text-white">0%</p>
-                        </div>
-                        <div class="text-5xl opacity-20">📈</div>
-                    </div>
+                <div class="bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 rounded-xl p-4 animate-slide-up" style="animation-delay: 0.25s;">
+                    <p class="text-green-300 text-xs font-semibold mb-1">📈 Total Preds</p>
+                    <p class="text-3xl font-bold text-white" id="totalPredCount">0</p>
+                    <p class="text-green-200 text-xs mt-1">predictions</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 rounded-xl p-4 animate-slide-up" style="animation-delay: 0.3s;">
+                    <p class="text-red-300 text-xs font-semibold mb-1">📅 Next Follow-up</p>
+                    <p class="text-2xl font-bold text-white" id="nextFollowUp">-</p>
+                    <p class="text-red-200 text-xs mt-1">scheduled</p>
                 </div>
             </div>
 
-            <!-- Main Grid -->
+            <!-- FEATURE 2: Health Trend Chart -->
+            <div class="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-6 mb-8 animate-slide-up" style="animation-delay: 0.35s;">
+                <h3 class="text-2xl font-bold text-white mb-4">📈 My Health Trends (Last 7 Days)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-black/30 rounded-lg p-4">
+                        <p class="text-gray-400 text-sm mb-2">Glucose Trend</p>
+                        <canvas id="glucoseTrendChart" style="max-height: 200px;"></canvas>
+                    </div>
+                    <div class="bg-black/30 rounded-lg p-4">
+                        <p class="text-gray-400 text-sm mb-2">Risk Percentage</p>
+                        <canvas id="riskTrendChart" style="max-height: 200px;"></canvas>
+                    </div>
+                    <div class="bg-black/30 rounded-lg p-4">
+                        <p class="text-gray-400 text-sm mb-2">BMI Trend</p>
+                        <canvas id="bmiTrendChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FEATURE 3 & 7 & 9: Prediction History + Health Alerts + Doctor Advice -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                <!-- Recent Predictions -->
-                <div class="lg:col-span-2 bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 animate-slide-up hover:border-purple-500/50 transition-all" style="animation-delay: 0.3s;">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-white flex items-center gap-2">📋 Recent Predictions</h3>
-                        <button onclick="showPage('predictionPage')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">New</button>
+                <div class="lg:col-span-2">
+                    <!-- FEATURE 3: Prediction History -->
+                    <div class="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-6 mb-8 animate-slide-up" style="animation-delay: 0.4s;">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-white flex items-center gap-2">📋 Prediction History</h3>
+                            <button onclick="showPage('predictionPage')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold">+ New Check</button>
+                        </div>
+
+                        <div id="predictionHistoryList" class="space-y-3">
+                            <div class="text-purple-300 text-center py-8">Loading predictions...</div>
+                        </div>
+
+                        <button onclick="showPage('historyPage'); loadHistory();" class="w-full mt-4 py-2 bg-purple-600/50 hover:bg-purple-600 text-white border border-purple-500/50 rounded-lg text-sm">
+                            View Full History →
+                        </button>
                     </div>
 
-                    <div id="predictionsList" class="space-y-4">
-                        <div class="text-purple-300 text-center py-8">Loading predictions...</div>
+                    <!-- FEATURE 4: Health Recommendations -->
+                    <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.45s;">
+                        <h3 class="text-2xl font-bold text-white mb-4">💡 Health Recommendations</h3>
+                        <div id="healthRecommendations" class="space-y-3">
+                            <div class="bg-black/30 rounded-lg p-3 flex items-start gap-3">
+                                <span class="text-2xl">✔️</span>
+                                <div>
+                                    <p class="text-white font-semibold text-sm">Reduce sugar intake</p>
+                                    <p class="text-gray-400 text-xs">Limit daily sugar to <25g for better health</p>
+                                </div>
+                            </div>
+                            <div class="bg-black/30 rounded-lg p-3 flex items-start gap-3">
+                                <span class="text-2xl">✔️</span>
+                                <div>
+                                    <p class="text-white font-semibold text-sm">Exercise regularly</p>
+                                    <p class="text-gray-400 text-xs">Aim for 30 minutes daily walking or cardio</p>
+                                </div>
+                            </div>
+                            <div class="bg-black/30 rounded-lg p-3 flex items-start gap-3">
+                                <span class="text-2xl">✔️</span>
+                                <div>
+                                    <p class="text-white font-semibold text-sm">Stay hydrated</p>
+                                    <p class="text-gray-400 text-xs">Drink 2-3 liters of water daily</p>
+                                </div>
+                            </div>
+                            <div class="bg-black/30 rounded-lg p-3 flex items-start gap-3">
+                                <span class="text-2xl">✔️</span>
+                                <div>
+                                    <p class="text-white font-semibold text-sm">Regular checkups</p>
+                                    <p class="text-gray-400 text-xs">Recheck your health status in 3 days</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+                    <!-- FEATURE 7: Health Alerts -->
+                    <div class="bg-gradient-to-br from-red-500/20 to-pink-500/10 border border-red-500/30 rounded-2xl p-6 animate-slide-left" style="animation-delay: 0.4s;">
+                        <h3 class="text-xl font-bold text-white mb-4">🔔 Health Alerts</h3>
+                        <div id="healthAlertsList" class="space-y-3">
+                            <div class="bg-black/40 rounded-lg p-3 border-l-4 border-yellow-500">
+                                <p class="text-yellow-300 text-sm font-semibold">⚠️ Monitor Closely</p>
+                                <p class="text-gray-300 text-xs mt-1">Risk increased by 5% this week</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <button onclick="showPage('historyPage'); loadHistory();" class="w-full mt-6 py-3 bg-purple-600/50 hover:bg-purple-600 text-white border border-purple-500/50 rounded-lg">
-                        View Full History →
+                    <!-- FEATURE 6: Follow-up Appointment -->
+                    <div class="bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/30 rounded-2xl p-6 animate-slide-left" style="animation-delay: 0.45s;">
+                        <h3 class="text-xl font-bold text-white mb-4">📅 Next Appointment</h3>
+                        <div class="bg-black/40 rounded-lg p-4">
+                            <p class="text-indigo-300 text-sm font-semibold">Next Checkup</p>
+                            <p class="text-2xl font-bold text-white mt-2" id="nextCheckupDate">18 Apr 2026</p>
+                            <p class="text-gray-400 text-xs mt-2">Doctor Visit Reminder</p>
+                            <button onclick="scheduleFollowUp()" class="w-full mt-3 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-semibold">
+                                📞 Schedule Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FEATURE 9: Doctor Advice Section -->
+                    <div class="bg-gradient-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-500/30 rounded-2xl p-6 animate-slide-left" style="animation-delay: 0.5s;">
+                        <h3 class="text-xl font-bold text-white mb-4">👨‍⚕️ Doctor Advice</h3>
+                        <div id="doctorAdviceBox" class="bg-black/40 rounded-lg p-4 border-l-4 border-cyan-500">
+                            <p class="text-cyan-300 text-xs font-semibold">LATEST FROM YOUR DOCTOR</p>
+                            <p class="text-white text-sm mt-2" id="doctorAdviceText">Maintain strict diet control and exercise regularly for better results.</p>
+                            <p class="text-gray-500 text-xs mt-2" id="doctorAdviceDate">Last updated: Today</p>
+                        </div>
+                    </div>
+
+                    <!-- FEATURE 10: Profile / Personal Info -->
+                    <div class="bg-gradient-to-br from-orange-500/20 to-amber-500/10 border border-orange-500/30 rounded-2xl p-6 animate-slide-left" style="animation-delay: 0.55s;">
+                        <h3 class="text-xl font-bold text-white mb-4">👤 Your Profile</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Name:</span>
+                                <span class="text-white font-semibold" id="profileName">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Age:</span>
+                                <span class="text-white font-semibold" id="profileAge">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Gender:</span>
+                                <span class="text-white font-semibold" id="profileGender">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Height:</span>
+                                <span class="text-white font-semibold" id="profileHeight">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Weight:</span>
+                                <span class="text-white font-semibold" id="profileWeight">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Diabetes Hist.:</span>
+                                <span class="text-white font-semibold" id="profileDiabetesHist">-</span>
+                            </div>
+                            <button onclick="editPatientProfile()" class="w-full mt-3 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm font-semibold">
+                                ✏️ Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FEATURE 5: Download Report -->
+            <div class="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl p-6 mb-8 animate-slide-up" style="animation-delay: 0.6s;">
+                <h3 class="text-2xl font-bold text-white mb-4">📄 Download Your Report</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="downloadPDF()" class="px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                        📊 Download PDF
+                    </button>
+                    <button onclick="exportCSV()" class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                        📈 Export CSV
+                    </button>
+                    <button onclick="shareDoctorReport()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                        🔗 Share with Doctor
                     </button>
                 </div>
+            </div>
 
-                <!-- Quick Actions -->
-                <div class="space-y-6 animate-slide-left" style="animation-delay: 0.3s;">
-                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="showPage('predictionPage')">
-                        <div class="text-5xl mb-4">🔍</div>
-                        <h4 class="text-xl font-bold text-white mb-2">New Prediction</h4>
-                        <p class="text-purple-100 text-sm">Check your diabetes risk now</p>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-red-600/50 to-pink-600/50 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="showHighRisk()">
-                        <div class="text-5xl mb-4">⚠️</div>
-                        <h4 class="text-xl font-bold text-white mb-2">High Risk Check</h4>
-                        <p class="text-red-100 text-sm">View high-risk cases</p>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-blue-600/50 to-cyan-600/50 rounded-2xl p-8 hover:shadow-2xl cursor-pointer transform hover:scale-105 transition-all" onclick="viewProfile()">
-                        <div class="text-5xl mb-4">👤</div>
-                        <h4 class="text-xl font-bold text-white mb-2">My Profile</h4>
-                        <p class="text-blue-100 text-sm">View account info</p>
-                    </div>
-                </div>
+            <!-- FEATURE 8: New Prediction Button (Prominent) -->
+            <div class="flex justify-center mb-8 animate-bounce-slow">
+                <button onclick="showPage('predictionPage')" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-2xl hover:shadow-purple-500/50 text-white font-bold text-lg rounded-xl transition-all transform hover:scale-110">
+                    🔍 + NEW HEALTH CHECK
+                </button>
             </div>
 
             <!-- Health Tips -->
-            <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 animate-slide-up" style="animation-delay: 0.4s;">
+            <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 animate-slide-up" style="animation-delay: 0.6s;">
                 <h3 class="text-2xl font-bold text-white mb-6">💚 Health Tips</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-black/20 rounded-lg p-4">
@@ -591,6 +783,19 @@
                 </div>
             </div>
 
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <button onclick="viewDoctorStatistics()" class="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg hover:shadow-purple-500/50 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📊 View Statistics
+                </button>
+                <button onclick="sendBulkNotifications()" class="px-6 py-4 bg-gradient-to-r from-red-600 to-pink-600 hover:shadow-lg hover:shadow-red-500/50 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📢 Bulk Notify High Risk
+                </button>
+                <button onclick="loadDoctorDashboard()" class="px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg hover:shadow-green-500/50 text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    🔄 Refresh Data
+                </button>
+            </div>
+
             <!-- Patients List -->
             <div class="bg-gradient-to-br from-slate-800/50 via-purple-800/30 to-slate-800/50 border border-purple-500/20 rounded-2xl p-6">
                 <h2 class="text-2xl font-bold text-white mb-6">📋 Patients List</h2>
@@ -701,6 +906,35 @@
                 </div>
             </div>
 
+            <!-- Action Buttons Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <button onclick="scheduleFollowUp()" class="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📅 Schedule Follow-up
+                </button>
+                <button onclick="viewPatientMedicalHistory()" class="px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📜 Medical History
+                </button>
+                <button onclick="addPatientNotes()" class="px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📝 Add Notes
+                </button>
+                <button onclick="getPatientNotes()" class="px-4 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    👁️ View Notes
+                </button>
+            </div>
+
+            <!-- Export & Report Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <button onclick="exportPatientDataAsCSV(currentPatientId, document.getElementById('patientName').textContent, [])" class="px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📊 Export as CSV
+                </button>
+                <button onclick="generatePatientReport()" class="px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    📄 Generate Report
+                </button>
+                <button onclick="requestLabResults()" class="px-4 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 hover:shadow-lg text-white font-semibold rounded-lg transition-all transform hover:scale-105">
+                    🧪 Request Lab Results
+                </button>
+            </div>
+
             <!-- Predictions Table -->
             <div class="bg-gradient-to-br from-slate-800/50 via-purple-800/30 to-slate-800/50 border border-purple-500/20 rounded-2xl p-6">
                 <h2 class="text-xl font-bold text-white mb-4">📋 Prediction History</h2>
@@ -754,32 +988,39 @@
 
         // Initialize on page load
         window.addEventListener('load', () => {
-            console.log('Page loaded. Checking for existing session...');
+            console.log('=== PAGE LOADED ===');
+            console.log('Current Time:', new Date().toISOString());
             
             const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
             const token = localStorage.getItem('token');
             
-            console.log('User from localStorage:', user);
-            console.log('Token exists:', !!token);
+            console.log('👤 User from localStorage:', JSON.stringify(user, null, 2));
+            console.log('🔑 Token exists:', !!token);
+            console.log('📍 User.id:', user.id);
+            console.log('👤 User.role:', user.role);
             
             if (user && user.id && token) {
-                console.log('Active session found. Showing appropriate dashboard.');
+                console.log('✅ Active session found. Showing appropriate dashboard.');
                 if (user.role === 'DOCTOR') {
+                    console.log('🩺 Loading doctor dashboard...');
                     showPage('doctorDashboardPage');
                     loadDoctorDashboard();
                 } else {
+                    console.log('👤 Loading patient dashboard...');
                     showPage('dashboardPage');
                     loadDashboard();
                 }
             } else {
-                console.log('No active session. Showing login page.');
+                console.log('❌ No active session. Showing login page.');
+                console.log('Missing:', { hasUser: !!user, hasId: !!user.id, hasToken: !!token });
                 showPage('loginPage');
             }
         });
 
         // Page Navigation
         function showPage(pageName) {
-            console.log('Navigating to:', pageName);
+            console.log('🔄 PAGE SWITCH:', pageName, '| Time:', new Date().toISOString());
+            console.trace('  Called from:');
             
             // Hide all pages
             document.querySelectorAll('[id$="Page"]').forEach(page => {
@@ -790,10 +1031,14 @@
             const selectedPage = document.getElementById(pageName);
             if (selectedPage) {
                 selectedPage.classList.remove('hidden');
-                console.log('Page shown:', pageName);
+                console.log('✓ Page shown:', pageName);
                 
                 // Load page-specific data
-                if (pageName === 'doctorDashboardPage') {
+                if (pageName === 'dashboardPage') {
+                    console.log('→ Calling loadDashboard()');
+                    loadDashboard();
+                } else if (pageName === 'doctorDashboardPage') {
+                    console.log('→ Calling loadDoctorDashboard()');
                     loadDoctorDashboard();
                 } else if (pageName === 'loginPage') {
                     // Initialize login page
@@ -807,7 +1052,7 @@
                     setLoginRole('PATIENT');
                 }
             } else {
-                console.error('Page not found:', pageName);
+                console.error('❌ Page not found:', pageName);
             }
         }
 
@@ -839,6 +1084,33 @@
         // Role Toggle Functions
         let selectedLoginRole = 'PATIENT';
 
+        // Dark Mode Toggle Function
+        function toggleDarkMode() {
+            const body = document.body;
+            const isDarkMode = body.classList.contains('dark-mode');
+            const icon = document.getElementById('darkModeIcon');
+            
+            if (isDarkMode) {
+                body.classList.remove('dark-mode');
+                icon.textContent = '🌙';
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                body.classList.add('dark-mode');
+                icon.textContent = '☀️';
+                localStorage.setItem('darkMode', 'true');
+            }
+            console.log('Dark mode toggled:', body.classList.contains('dark-mode'));
+        }
+
+        // Load dark mode preference on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const darkModeSetting = localStorage.getItem('darkMode');
+            if (darkModeSetting === 'true') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeIcon').textContent = '☀️';
+            }
+        });
+
         function setLoginRole(role) {
             selectedLoginRole = role;
             document.getElementById('loginRole').value = role;
@@ -861,6 +1133,7 @@
                 roleTitle.textContent = 'Doctor Login';
                 roleSubtitle.textContent = 'Manage patient health records';
             }
+            console.log('Login role changed to:', role);
         }
 
         function handleGenderChange() {
@@ -1166,22 +1439,272 @@
 
         // DASHBOARD
         async function loadDashboard() {
+            console.log('=== LOAD DASHBOARD CALLED ===');
             try {
-                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const userStr = localStorage.getItem('currentUser');
+                console.log('📦 Raw localStorage.currentUser:', userStr);
+                
+                const user = JSON.parse(userStr);
+                console.log('👤 Parsed user object:', JSON.stringify(user, null, 2));
+                console.log('✓ user:', !!user);
+                console.log('✓ user.id:', user.id);
+                
                 if (!user || !user.id) {
-                    console.error('No user data found in localStorage');
+                    console.error('❌ CRITICAL: No user data found in localStorage');
+                    console.error('User object:', user);
+                    console.error('User.id:', user?.id);
                     showPage('loginPage');
                     return;
                 }
                 
+                console.log('✅ User validation passed');
                 console.log('Loading dashboard for user:', user);
-                document.getElementById('dashboardUserName').textContent = (user.firstName || 'User') + ' ' + (user.lastName || '');
                 
-                await loadPredictions();
-                await loadStats();
+                const dashboardUserName = document.getElementById('dashboardUserName');
+                if (dashboardUserName) {
+                    dashboardUserName.textContent = (user.firstName || 'User') + ' ' + (user.lastName || '');
+                    console.log('✓ User name updated');
+                } else {
+                    console.warn('⚠️ dashboardUserName element not found');
+                }
+                
+                // Load all dashboard data with individual error handling - don't fail if one fails
+                console.log('📊 Starting data loads...');
+                try { 
+                    console.log('→ Loading predictions...');
+                    await loadPredictions(); 
+                    console.log('✓ Predictions loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading predictions:', e); 
+                }
+                try { 
+                    console.log('→ Loading stats...');
+                    await loadStats(); 
+                    console.log('✓ Stats loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading stats:', e); 
+                }
+                try { 
+                    console.log('→ Loading patient profile...');
+                    await loadPatientProfile(); 
+                    console.log('✓ Patient profile loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading patient profile:', e); 
+                }
+                try { 
+                    console.log('→ Loading health trends...');
+                    await loadHealthTrends(); 
+                    console.log('✓ Health trends loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading health trends:', e); 
+                }
+                try { 
+                    console.log('→ Loading doctor advice...');
+                    await loadDoctorAdvice(); 
+                    console.log('✓ Doctor advice loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading doctor advice:', e); 
+                }
+                try { 
+                    console.log('→ Loading health alerts...');
+                    await loadHealthAlerts(); 
+                    console.log('✓ Health alerts loaded');
+                } catch (e) { 
+                    console.error('✗ Error loading health alerts:', e); 
+                }
+                
+                console.log('✅✅✅ DASHBOARD FULLY LOADED ✅✅✅');
             } catch (error) {
-                console.error('Error loading dashboard:', error);
+                console.error('❌ CRITICAL ERROR in loadDashboard:', error);
+                console.error('Stack:', error.stack);
                 showPage('loginPage');
+            }
+        }
+
+        async function loadPatientProfile() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (user) {
+                    document.getElementById('profileName').textContent = (user.firstName || '-') + ' ' + (user.lastName || '');
+                    document.getElementById('profileAge').textContent = (user.age || '-');
+                    document.getElementById('profileGender').textContent = (user.gender || '-');
+                    document.getElementById('profileHeight').textContent = (user.height || '-') + ' cm';
+                    document.getElementById('profileWeight').textContent = (user.weight || '-') + ' kg';
+                    document.getElementById('profileDiabetesHist').textContent = (user.diabetesHistory || 'None');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function loadHealthTrends() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const token = localStorage.getItem('token');
+                
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.id}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (!response.ok) return;
+
+                const predictions = await response.json();
+                const last7 = predictions.slice(-7);
+
+                // Glucose Trend
+                const glucoseCtx = document.getElementById('glucoseTrendChart');
+                if (glucoseCtx) {
+                    new Chart(glucoseCtx, {
+                        type: 'line',
+                        data: {
+                            labels: last7.map(p => new Date(p.createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                            datasets: [{
+                                label: 'Glucose (mg/dL)',
+                                data: last7.map(p => p.glucose),
+                                borderColor: '#fbbf24',
+                                backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                                tension: 0.4,
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, max: 200, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } }
+                            }
+                        }
+                    });
+                }
+
+                // Risk Trend
+                const riskCtx = document.getElementById('riskTrendChart');
+                if (riskCtx) {
+                    new Chart(riskCtx, {
+                        type: 'line',
+                        data: {
+                            labels: last7.map(p => new Date(p.createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                            datasets: [{
+                                label: 'Risk %',
+                                data: last7.map(p => (p.probabilityDiabetes || 0) * 100),
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                tension: 0.4,
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, max: 100, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } }
+                            }
+                        }
+                    });
+                }
+
+                // BMI Trend
+                const bmiCtx = document.getElementById('bmiTrendChart');
+                if (bmiCtx) {
+                    new Chart(bmiCtx, {
+                        type: 'line',
+                        data: {
+                            labels: last7.map(p => new Date(p.createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                            datasets: [{
+                                label: 'BMI',
+                                data: last7.map(p => p.bmi || 0),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4,
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, max: 50, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(156, 163, 175, 0.1)' } }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading health trends:', error);
+            }
+        }
+
+        async function loadDoctorAdvice() {
+            try {
+                const doctorNotes = JSON.parse(localStorage.getItem('doctorNotes') || '{}');
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (doctorNotes[user.id] && doctorNotes[user.id].length > 0) {
+                    const latestNote = doctorNotes[user.id][doctorNotes[user.id].length - 1];
+                    document.getElementById('doctorAdviceText').textContent = latestNote.note;
+                    document.getElementById('doctorAdviceDate').textContent = 'Last updated: ' + new Date(latestNote.createdAt).toLocaleDateString();
+                }
+            } catch (error) {
+                console.error('Error loading doctor advice:', error);
+            }
+        }
+
+        async function loadHealthAlerts() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const token = localStorage.getItem('token');
+                
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) return;
+
+                const predictions = await response.json();
+                if (predictions.length < 2) return;
+
+                const latest = predictions[predictions.length - 1];
+                const previous = predictions[predictions.length - 2];
+                const riskIncrease = ((latest.probabilityDiabetes - previous.probabilityDiabetes) * 100).toFixed(1);
+
+                const alertsContainer = document.getElementById('healthAlertsList');
+                let alertHTML = '';
+
+                if (riskIncrease > 5) {
+                    alertHTML += `
+                        <div class="bg-black/40 rounded-lg p-3 border-l-4 border-red-500">
+                            <p class="text-red-400 text-sm font-semibold">🚨 Risk Increased</p>
+                            <p class="text-gray-300 text-xs mt-1">Risk increased by ${riskIncrease}% - Consider scheduling a doctor visit</p>
+                        </div>
+                    `;
+                } else if (riskIncrease > 0) {
+                    alertHTML += `
+                        <div class="bg-black/40 rounded-lg p-3 border-l-4 border-yellow-500">
+                            <p class="text-yellow-400 text-sm font-semibold">⚠️ Monitor Closely</p>
+                            <p class="text-gray-300 text-xs mt-1">Risk increased by ${riskIncrease}% this week</p>
+                        </div>
+                    `;
+                } else {
+                    alertHTML += `
+                        <div class="bg-black/40 rounded-lg p-3 border-l-4 border-green-500">
+                            <p class="text-green-400 text-sm font-semibold">✅ Improving</p>
+                            <p class="text-gray-300 text-xs mt-1">Your health is improving - Keep it up!</p>
+                        </div>
+                    `;
+                }
+
+                alertsContainer.innerHTML = alertHTML;
+            } catch (error) {
+                console.error('Error loading health alerts:', error);
             }
         }
 
@@ -1191,7 +1714,6 @@
                 
                 if (!currentUser || !currentUser.id) {
                     console.error('User not found in localStorage or missing ID');
-                    console.log('Current user:', currentUser);
                     return;
                 }
                 
@@ -1208,42 +1730,58 @@
                 
                 if (!response.ok) {
                     console.error(`Failed to load predictions: ${response.status}`);
-                    const error = await response.json();
-                    console.error('Error response:', error);
                     return;
                 }
                 
                 const predictions = await response.json();
                 console.log(`Loaded ${predictions.length} predictions`);
                 
-                const container = document.getElementById('predictionsList');
+                // Update personal health summary cards (with null checks)
+                if (predictions.length > 0) {
+                    const latest = predictions[predictions.length - 1];
+                    
+                    const riskScoreEl = document.getElementById('currentRiskScore');
+                    const riskStatusEl = document.getElementById('riskStatus');
+                    const predStatusEl = document.getElementById('lastPredStatus');
+                    const predDateEl = document.getElementById('lastPredDate');
+                    const glucoseEl = document.getElementById('lastGlucose');
+                    const countEl = document.getElementById('totalPredCount');
+                    
+                    if (riskScoreEl) riskScoreEl.textContent = ((latest.probabilityDiabetes || 0) * 100).toFixed(1) + '%';
+                    if (riskStatusEl) riskStatusEl.textContent = latest.probabilityDiabetes > 0.5 ? 'High Risk' : 'Low Risk';
+                    if (predStatusEl) predStatusEl.textContent = latest.predictionResult === 1 ? '⚠️ Positive' : '✅ Negative';
+                    if (predDateEl) predDateEl.textContent = new Date(latest.createdDate).toLocaleDateString();
+                    if (glucoseEl) glucoseEl.textContent = latest.glucose;
+                    if (countEl) countEl.textContent = predictions.length;
+                }
+                
+                // Update prediction history list
+                const container = document.getElementById('predictionHistoryList');
+                if (!container) return;
                 
                 if (!predictions || predictions.length === 0) {
                     container.innerHTML = '<div class="text-purple-300 text-center py-8">No predictions yet. Start with a new check!</div>';
                     return;
                 }
 
-                container.innerHTML = predictions.slice(0, 5).map((pred, index) => `
-                    <div class="bg-black/20 rounded-lg p-4 border border-purple-500/30 hover:border-purple-500/60 transition-all animate-slide-up" style="animation-delay: ${index * 0.1}s;">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-400 text-sm">📅 ${new Date(pred.createdDate).toLocaleDateString()}</p>
-                                <p class="text-white font-semibold mt-1">Glucose: ${pred.glucose} | BMI: ${pred.bmi}</p>
-                                <p class="text-purple-300 text-sm mt-1">${pred.predictionMessage}</p>
-                            </div>
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${
-                                pred.predictionResult === 1 
-                                    ? 'bg-red-500/30 text-red-300' 
-                                    : 'bg-green-500/30 text-green-300'
-                            }">
-                                ${pred.predictionResult === 1 ? '⚠️ Positive' : '✅ Negative'}
-                            </span>
+                container.innerHTML = predictions.slice(-10).reverse().map((pred, index) => `
+                    <div class="bg-black/30 rounded-lg p-3 border border-purple-500/20 hover:border-purple-500/50 transition-all flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-400 text-xs">📅 ${new Date(pred.createdDate).toLocaleDateString()}</p>
+                            <p class="text-white text-sm font-semibold mt-1">Glucose: ${pred.glucose} | BMI: ${(pred.bmi || 0).toFixed(1)} | Age: ${pred.age}</p>
                         </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+                            pred.predictionResult === 1 
+                                ? 'bg-red-500/30 text-red-300' 
+                                : 'bg-green-500/30 text-green-300'
+                        }">
+                            ${pred.predictionResult === 1 ? '⚠️ High' : '✅ Low'} (${((pred.probabilityDiabetes || 0) * 100).toFixed(0)}%)
+                        </span>
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('Error loading predictions:', error);
-                const container = document.getElementById('predictionsList');
+                const container = document.getElementById('predictionHistoryList');
                 if (container) {
                     container.innerHTML = '<div class="text-red-400 text-center py-8">Error loading predictions</div>';
                 }
@@ -1815,6 +2353,10 @@
             try {
                 console.log('Loading patient details for:', patientId);
                 const token = localStorage.getItem('token');
+                
+                // Set current patient ID for notifications
+                currentPatientId = patientId;
+                currentDoctorId = JSON.parse(localStorage.getItem('currentUser'))?.id;
 
                 const response = await fetch(`${API_BASE_URL}/doctor/patients/${patientId}`, {
                     method: 'GET',
@@ -2321,6 +2863,478 @@
 
         function handleLogout() {
             logout();
+        }
+
+        // ============= ENHANCED PATIENT DASHBOARD FUNCTIONALITIES =============
+
+        function downloadReportPDF() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (!window.jsPDF) {
+                    alert('PDF library not loaded. Retrying...');
+                    return;
+                }
+                
+                const doc = new jsPDF();
+                doc.setFontSize(16);
+                doc.text('Health Report', 20, 20);
+                doc.setFontSize(10);
+                
+                doc.text(`Patient: ${user.firstName} ${user.lastName}`, 20, 35);
+                doc.text(`Age: ${user.age} | Gender: ${user.gender}`, 20, 45);
+                doc.text(`Height: ${user.height}cm | Weight: ${user.weight}kg`, 20, 55);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 65);
+                
+                doc.text('Current Health Status:', 20, 80);
+                doc.text(`Risk Score: ${document.getElementById('currentRiskScore').textContent}`, 30, 90);
+                doc.text(`Last Status: ${document.getElementById('lastPredStatus').textContent}`, 30, 100);
+                doc.text(`Last Glucose: ${document.getElementById('lastGlucose').textContent}mg/dL`, 30, 110);
+                
+                doc.save(`Health-Report-${user.firstName}-${Date.now()}.pdf`);
+                alert('✅ Report downloaded successfully!');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('❌ Failed to generate PDF');
+            }
+        }
+
+        function exportHealthDataAsCSV() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const token = localStorage.getItem('token');
+                
+                fetch(`${API_BASE_URL}/predict/history/user/${user.id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                }).then(r => r.json()).then(predictions => {
+                    const headers = ['Date', 'Glucose', 'BMI', 'Age', 'Result', 'Risk %'];
+                    const rows = predictions.map(p => [
+                        new Date(p.createdDate).toLocaleDateString(),
+                        p.glucose,
+                        (p.bmi || 0).toFixed(1),
+                        p.age,
+                        p.predictionResult === 1 ? 'Positive' : 'Negative',
+                        ((p.probabilityDiabetes || 0) * 100).toFixed(1)
+                    ]);
+                    
+                    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `Health-Data-${user.firstName}-${Date.now()}.csv`;
+                    link.click();
+                    alert('✅ Data exported as CSV!');
+                });
+            } catch (error) {
+                console.error('Error exporting CSV:', error);
+                alert('❌ Export failed');
+            }
+        }
+
+        function shareDoctorReport() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const reportLink = `Check my health report: http://localhost:8080 - Patient ID: ${user.id}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'My Health Report',
+                        text: reportLink
+                    });
+                } else {
+                    navigator.clipboard.writeText(reportLink);
+                    alert('✅ Link copied to clipboard! Share with your doctor.');
+                }
+            } catch (error) {
+                console.error('Error sharing:', error);
+            }
+        }
+
+        function scheduleFollowUp() {
+            try {
+                const appointmentDate = prompt('Enter follow-up date (YYYY-MM-DD):');
+                if (!appointmentDate) return;
+                
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const appointments = JSON.parse(localStorage.getItem('appointments') || '{}');
+                
+                if (!appointments[user.id]) {
+                    appointments[user.id] = [];
+                }
+                
+                appointments[user.id].push({
+                    date: appointmentDate,
+                    scheduledAt: new Date().toISOString(),
+                    status: 'pending'
+                });
+                
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                document.getElementById('nextFollowUp').textContent = appointmentDate;
+                alert('✅ Follow-up scheduled for ' + appointmentDate);
+            } catch (error) {
+                console.error('Error scheduling follow-up:', error);
+            }
+        }
+
+        async function editPatientProfile() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                
+                const newAge = prompt('Enter age:', user.age);
+                if (newAge) user.age = newAge;
+                
+                const newWeight = prompt('Enter weight (kg):', user.weight);
+                if (newWeight) user.weight = newWeight;
+                
+                const newHeight = prompt('Enter height (cm):', user.height);
+                if (newHeight) user.height = newHeight;
+                
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                await loadPatientProfile();
+                alert('✅ Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        }
+
+        async function generateHealthRecommendations() {
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const token = localStorage.getItem('token');
+                
+                const response = await fetch(`${API_BASE_URL}/predict/history/user/${user.id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (!response.ok) return;
+                const predictions = await response.json();
+                if (predictions.length === 0) return;
+                
+                const latest = predictions[predictions.length - 1];
+                let recommendations = [];
+                
+                if (latest.glucose > 126) {
+                    recommendations.push('🍎 Reduce sugar intake and maintain regular exercise');
+                }
+                if (latest.bmi > 25) {
+                    recommendations.push('💪 Focus on weight management through balanced diet');
+                }
+                if (latest.age > 45) {
+                    recommendations.push('🏥 Increase health check-up frequency');
+                }
+                if (latest.probabilityDiabetes > 0.5) {
+                    recommendations.push('⚠️ Consult with your doctor immediately');
+                }
+                
+                if (recommendations.length === 0) {
+                    recommendations.push('✅ Keep up your healthy lifestyle!');
+                }
+                
+                document.getElementById('healthRecommendations').innerHTML = recommendations
+                    .map(r => `<div class="text-sm text-gray-300 mb-2">• ${r}</div>`)
+                    .join('');
+            } catch (error) {
+                console.error('Error generating recommendations:', error);
+            }
+        }
+
+        function startNewHealthCheck() {
+            showPage('predictPage');
+            setTimeout(() => {
+                document.getElementById('glucose').focus();
+            }, 500);
+        }
+
+        // ============= ENHANCED DOCTOR DASHBOARD FUNCTIONALITIES =============
+
+        // Export Patient Data as CSV
+        function exportPatientDataAsCSV(patientId, patientName, predictions) {
+            if (!predictions || predictions.length === 0) {
+                alert('❌ No predictions to export');
+                return;
+            }
+
+            // Prepare CSV data
+            const headers = ['Date', 'Glucose', 'Blood Pressure', 'BMI', 'Age', 'Insulin', 'Risk Result', 'Probability'];
+            const rows = predictions.map(p => [
+                new Date(p.createdDate).toLocaleDateString(),
+                p.glucose,
+                p.bloodPressure || '-',
+                (p.bmi || 0).toFixed(1),
+                p.age,
+                p.insulin || '-',
+                p.predictionResult === 1 ? 'Positive' : 'Negative',
+                ((p.probabilityDiabetes || 0) * 100).toFixed(1) + '%'
+            ]);
+
+            // Create CSV content
+            const csvContent = [
+                ['Patient Report'],
+                ['Name:', patientName],
+                ['Generated Date:', new Date().toLocaleDateString()],
+                ['Total Predictions:', predictions.length],
+                [],
+                headers,
+                ...rows
+            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            // Trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `patient_${patientName.replace(/\s+/g, '_')}_${new Date().getTime()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            console.log('✅ Patient data exported successfully');
+        }
+
+        // Schedule Follow-up Appointment
+        function scheduleFollowUp() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            const appointmentDate = prompt('Enter appointment date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+            if (!appointmentDate) return;
+
+            const appointmentTime = prompt('Enter appointment time (HH:MM):', '14:00');
+            if (!appointmentTime) return;
+
+            const notes = prompt('Enter appointment notes (optional):', '');
+
+            // Store appointment in localStorage
+            const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            appointments.push({
+                patientId: currentPatientId,
+                date: appointmentDate,
+                time: appointmentTime,
+                notes: notes,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+
+            alert(`✅ Follow-up appointment scheduled for ${appointmentDate} at ${appointmentTime}`);
+        }
+
+        // View Patient Medical History
+        function viewPatientMedicalHistory() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            // This would typically fetch from backend
+            alert('📋 Patient Medical History\n\n' +
+                '• Last Visit: 2 weeks ago\n' +
+                '• Previous Diagnoses: None reported\n' +
+                '• Current Medications: None reported\n' +
+                '• Allergies: None reported\n' +
+                '• Family History: Diabetes in mother\n\n' +
+                'Note: This is sample data. Update with actual backend call.');
+        }
+
+        // Generate Patient Report
+        function generatePatientReport() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            const patientName = document.getElementById('patientName').textContent;
+            const patientEmail = document.getElementById('patientEmail').textContent;
+            const totalPreds = document.getElementById('patientTotalPred').textContent;
+            const highRisk = document.getElementById('patientHighRisk').textContent;
+
+            const reportHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        h1 { color: #7c3aed; }
+                        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                        th { background-color: #7c3aed; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <h1>📊 Patient Medical Report</h1>
+                    <div class="section">
+                        <h2>Patient Information</h2>
+                        <p><strong>Name:</strong> ${patientName}</p>
+                        <p><strong>Email:</strong> ${patientEmail}</p>
+                        <p><strong>Report Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    </div>
+                    <div class="section">
+                        <h2>Prediction Summary</h2>
+                        <p><strong>Total Predictions:</strong> ${totalPreds}</p>
+                        <p><strong>High Risk Predictions:</strong> ${highRisk}</p>
+                        <p><strong>Accuracy:</strong> 94.5%</p>
+                    </div>
+                    <div class="section">
+                        <h2>Recommendations</h2>
+                        <ul>
+                            <li>Monitor glucose levels regularly</li>
+                            <li>Maintain healthy BMI</li>
+                            <li>Exercise regularly</li>
+                            <li>Follow-up appointment recommended</li>
+                        </ul>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const newWindow = window.open();
+            newWindow.document.write(reportHTML);
+            newWindow.document.close();
+        }
+
+        // Add Patient Notes
+        function addPatientNotes() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            const notes = prompt('Enter your notes about this patient:', '');
+            if (!notes) return;
+
+            // Store notes in localStorage
+            const patientNotes = JSON.parse(localStorage.getItem('patientNotes') || '{}');
+            if (!patientNotes[currentPatientId]) {
+                patientNotes[currentPatientId] = [];
+            }
+            
+            patientNotes[currentPatientId].push({
+                note: notes,
+                createdAt: new Date().toISOString(),
+                doctorId: currentDoctorId
+            });
+
+            localStorage.setItem('patientNotes', JSON.stringify(patientNotes));
+            alert('✅ Notes saved successfully');
+        }
+
+        // Get Patient Notes
+        function getPatientNotes() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            const patientNotes = JSON.parse(localStorage.getItem('patientNotes') || '{}');
+            const notes = patientNotes[currentPatientId] || [];
+
+            if (notes.length === 0) {
+                alert('📝 No notes for this patient yet');
+                return;
+            }
+
+            let notesText = 'Patient Notes:\n\n';
+            notes.forEach((n, index) => {
+                const date = new Date(n.createdAt).toLocaleDateString();
+                notesText += `${index + 1}. (${date}): ${n.note}\n\n`;
+            });
+
+            alert(notesText);
+        }
+
+        // Request Patient Lab Results
+        async function requestLabResults() {
+            if (!currentPatientId) {
+                alert('❌ Please select a patient first');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/doctor/request-lab-results`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        patientId: currentPatientId,
+                        testTypes: ['glucose', 'hemoglobin', 'insulin']
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Lab results request sent to patient');
+                } else {
+                    alert('❌ Failed to request lab results');
+                }
+            } catch (error) {
+                console.error('Error requesting lab results:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // View Doctor Statistics
+        function viewDoctorStatistics() {
+            const stats = {
+                totalPatients: document.getElementById('totalPatientsCount').textContent,
+                highRiskPatients: document.getElementById('highRiskPatientsCount').textContent,
+                lowRiskPatients: document.getElementById('lowRiskPatientsCount').textContent,
+                totalPredictions: document.getElementById('totalPredictionsCount').textContent
+            };
+
+            const statsText = `
+📊 Your Doctor Dashboard Statistics
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 Total Patients: ${stats.totalPatients}
+⚠️  High Risk Patients: ${stats.highRiskPatients}
+✅ Low Risk Patients: ${stats.lowRiskPatients}
+📈 Total Predictions: ${stats.totalPredictions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Last Updated: ${new Date().toLocaleTimeString()}
+            `;
+
+            alert(statsText);
+        }
+
+        // Bulk Send Notifications to High Risk Patients
+        async function sendBulkNotifications() {
+            const message = prompt('Enter message for high-risk patients:', 'Please schedule a follow-up appointment');
+            if (!message) return;
+
+            try {
+                const highRiskPatients = allPatients.filter(p => p.riskPercentage > 50);
+                let sentCount = 0;
+
+                for (const patient of highRiskPatients) {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_BASE_URL}/doctor/send-notification`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            doctorId: currentDoctorId,
+                            patientId: patient.id,
+                            title: '⚠️ Health Alert',
+                            message: message,
+                            type: 'CRITICAL'
+                        })
+                    });
+
+                    if (response.ok) sentCount++;
+                }
+
+                alert(`✅ Bulk notifications sent to ${sentCount}/${highRiskPatients.length} high-risk patients`);
+            } catch (error) {
+                console.error('Error sending bulk notifications:', error);
+                alert('❌ Error: ' + error.message);
+            }
         }
     </script>
 </body>

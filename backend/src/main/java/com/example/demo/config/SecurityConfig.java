@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
@@ -28,20 +30,28 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints - no authentication required
+                // Allow static resources without authentication
+                .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/public/**", "/static/**", 
+                                "/*.css", "/*.js", "/*.ico", "/*.png", "/*.jpg", "/*.jpeg", "/*.svg", "/*.woff", 
+                                "/*.woff2", "/*.ttf", "/*.eot").permitAll()
+                
+                // Public API endpoints - no authentication required
                 .requestMatchers("/api/health", "/api/ping", "/api/status").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/verify").permitAll()
                 .requestMatchers("/api/predict/diabetes").permitAll()
+                .requestMatchers("/api/predict/heart").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 
-                // Require authentication for other endpoints
+                // Require authentication for other API endpoints
                 .requestMatchers("/api/**").authenticated()
+                
+                // Allow other requests
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .httpBasic(basic -> {})
+            .httpBasic(basic -> basic.disable())
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .formLogin(form -> form.disable());
 

@@ -1646,7 +1646,7 @@
 </head>
 <body>
     <!-- ===== LOGIN FORM ===== -->
-    <div class="auth-container active" id="loginForm">
+    <div class="auth-container" id="loginForm">
         <div class="auth-header">
             <h1>🏥 Login</h1>
             <p>Welcome to RealTime Diabetes Prediction System</p>
@@ -2174,6 +2174,23 @@
 
             <!-- ===== TAB 3: PREDICTION ===== -->
             <div id="prediction" class="tab-content">
+                <!-- Prediction Type Selector -->
+                <div class="card">
+                    <h2><i class="fas fa-heartbeat"></i> Select Prediction Type</h2>
+                    <div class="role-buttons" style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
+                        <button type="button" class="role-btn active" onclick="switchPredictionType('diabetes')" style="flex: 1; padding: 20px; font-size: 16px;">
+                            <i class="fas fa-heartbeat"></i><br>
+                            Health Risk (Diabetes)
+                        </button>
+                        <button type="button" class="role-btn" onclick="switchPredictionType('heart')" style="flex: 1; padding: 20px; font-size: 16px;">
+                            <i class="fas fa-heart"></i><br>
+                            Heart Disease Risk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Diabetes Prediction Form -->
+                <div id="diabetesPredictionSection">
                 <div class="card">
                     <h2><i class="fas fa-stethoscope"></i> Make Diabetes Prediction</h2>
                     <form id="predictionForm" onsubmit="handlePrediction(event)">
@@ -2245,6 +2262,151 @@
                     <div class="recommendation-list" id="recommendationsList">
                         <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized health recommendations.</p>
                     </div>
+                </div>
+                </div>
+
+                <!-- Heart Disease Prediction Form -->
+                <div id="heartPredictionSection" style="display: none;">
+                <div class="card">
+                    <h2><i class="fas fa-heart"></i> Make Heart Disease Prediction</h2>
+                    <form id="heartForm" onsubmit="handleHeartPrediction(event)">
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="age_heart">Age (years)</label>
+                                <input type="number" id="age_heart" min="0" placeholder="Age in years" required>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="sex">Sex</label>
+                                <select id="sex" required>
+                                    <option value="">Select Sex</option>
+                                    <option value="1">Male</option>
+                                    <option value="0">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="cp">Chest Pain Type</label>
+                                <select id="cp" required>
+                                    <option value="">Select Type</option>
+                                    <option value="0">Typical Angina</option>
+                                    <option value="1">Atypical Angina</option>
+                                    <option value="2">Non-anginal Pain</option>
+                                    <option value="3">Asymptomatic</option>
+                                </select>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="trestbps">Resting Blood Pressure (mmHg)</label>
+                                <input type="number" id="trestbps" min="0" placeholder="mmHg" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="chol">Cholesterol (mg/dL)</label>
+                                <input type="number" id="chol" min="0" placeholder="mg/dL" required>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="fbs">Fasting Blood Sugar > 120 (mg/dL)</label>
+                                <select id="fbs" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes (> 120)</option>
+                                    <option value="0">No (<= 120)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="restecg">Resting ECG Results</label>
+                                <select id="restecg" required>
+                                    <option value="">Select Type</option>
+                                    <option value="0">Normal</option>
+                                    <option value="1">ST-T Abnormality</option>
+                                    <option value="2">LV Hypertrophy</option>
+                                </select>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="thalach">Max Heart Rate Achieved (bpm)</label>
+                                <input type="number" id="thalach" min="0" placeholder="bpm" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="exang">Exercise Induced Angina</label>
+                                <select id="exang" required>
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="oldpeak">ST Depression Induced by Exercise</label>
+                                <input type="number" id="oldpeak" min="0" step="0.1" placeholder="0.0 - 6.2" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard">
+                                <label for="slope">Slope of ST Segment</label>
+                                <select id="slope" required>
+                                    <option value="">Select Type</option>
+                                    <option value="0">Upsloping</option>
+                                    <option value="1">Flat</option>
+                                    <option value="2">Downsloping</option>
+                                </select>
+                            </div>
+                            <div class="form-group-dashboard">
+                                <label for="ca">Number of Major Vessels (0-3)</label>
+                                <select id="ca" required>
+                                    <option value="">Select</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group-dashboard" style="grid-column: 1 / -1;">
+                                <label for="thal">Thalassemia</label>
+                                <select id="thal" required>
+                                    <option value="">Select Type</option>
+                                    <option value="0">Normal</option>
+                                    <option value="1">Fixed Defect</option>
+                                    <option value="2">Reversible Defect</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="loading" id="heartPredictionLoading">
+                            <div class="spinner"></div>
+                            <p>Analyzing your data...</p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-heart"></i> Predict Heart Disease Risk
+                        </button>
+                    </form>
+
+                    <!-- Prediction Result -->
+                    <div class="result" id="heartPredictionResult" style="margin-top: 20px;">
+                        <div class="result-title">Prediction Result</div>
+                        <div class="result-value" id="heartResultValue"></div>
+                        <div class="result-message" id="heartResultMessage"></div>
+                    </div>
+                </div>
+
+                <!-- Heart Disease Recommendations -->
+                <div class="card">
+                    <h2><i class="fas fa-heart"></i> Heart Health Recommendations</h2>
+                    <div class="recommendation-list" id="heartRecommendationsList">
+                        <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized heart health recommendations.</p>
+                    </div>
+                </div>
                 </div>
             </div>
                 <div class="card">
@@ -2389,18 +2551,36 @@
     <script>
         const API_BASE = 'http://localhost:8080/api';
         let currentUser = null;
+        
+        function getAuthHeaders() {
+            const user = currentUser || JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const headers = { 'Content-Type': 'application/json' };
+            if (user.token) {
+                headers['Authorization'] = `Bearer ${user.token}`;
+            }
+            return headers;
+        }
         let predictionHistory = [];
         let charts = {};
 
-        // Initialize
-        window.addEventListener('load', () => {
+        // Initialize - Check for saved user on DOMContentLoaded (faster than load event)
+        document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showDashboard();
-                loadDashboardData();
-                updateTime();
-                setInterval(updateTime, 1000);
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showDashboard();
+                    loadDashboardData();
+                    updateTime();
+                    setInterval(updateTime, 1000);
+                } catch (e) {
+                    console.error('Error parsing saved user:', e);
+                    localStorage.removeItem('currentUser');
+                    showForm('login');
+                }
+            } else {
+                // No saved user, show login form
+                showForm('login');
             }
         });
 
@@ -2511,9 +2691,19 @@
                     const data = await response.json();
                     currentUser = data;
                     localStorage.setItem('currentUser', JSON.stringify(data));
-                    showDashboard();
-                    loadDashboardData();
-                    document.getElementById('predictionForm').reset();
+                    
+                    // Redirect based on user role
+                    setTimeout(() => {
+                        if (data.role === 'doctor') {
+                            window.location.href = 'doctor-dashboard.html';
+                        } else if (data.role === 'patient') {
+                            window.location.href = 'patient-dashboard.html';
+                        } else {
+                            showDashboard();
+                            loadDashboardData();
+                            document.getElementById('predictionForm').reset();
+                        }
+                    }, 500);
                 } else {
                     showError('loginError', 'Invalid credentials. Please try again.');
                 }
@@ -2590,7 +2780,7 @@
 
                 const response = await fetch(`${API_BASE}/predict/diabetes`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(requestData)
                 });
 
@@ -2731,6 +2921,167 @@
             });
         }
 
+        // ===== PREDICTION TYPE SWITCHER =====
+        function switchPredictionType(type) {
+            // Update button states
+            const buttons = document.querySelectorAll('[onclick*="switchPredictionType"]');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('button').classList.add('active');
+
+            // Show/hide sections
+            if (type === 'diabetes') {
+                document.getElementById('diabetesPredictionSection').style.display = 'block';
+                document.getElementById('heartPredictionSection').style.display = 'none';
+                document.getElementById('predictionForm').reset();
+            } else {
+                document.getElementById('diabetesPredictionSection').style.display = 'none';
+                document.getElementById('heartPredictionSection').style.display = 'block';
+                document.getElementById('heartForm').reset();
+            }
+        }
+
+        // ===== HEART DISEASE PREDICTION FUNCTIONS =====
+        async function handleHeartPrediction(event) {
+            event.preventDefault();
+            clearErrors();
+
+            document.getElementById('heartPredictionLoading').classList.add('show');
+
+            try {
+                const requestData = {
+                    age: parseFloat(document.getElementById('age_heart').value),
+                    sex: parseInt(document.getElementById('sex').value),
+                    cp: parseInt(document.getElementById('cp').value),
+                    trestbps: parseFloat(document.getElementById('trestbps').value),
+                    chol: parseFloat(document.getElementById('chol').value),
+                    fbs: parseInt(document.getElementById('fbs').value),
+                    restecg: parseInt(document.getElementById('restecg').value),
+                    thalach: parseFloat(document.getElementById('thalach').value),
+                    exang: parseInt(document.getElementById('exang').value),
+                    oldpeak: parseFloat(document.getElementById('oldpeak').value),
+                    slope: parseInt(document.getElementById('slope').value),
+                    ca: parseInt(document.getElementById('ca').value),
+                    thal: parseInt(document.getElementById('thal').value),
+                    userId: currentUser.id
+                };
+
+                const response = await fetch(`${API_BASE}/predict/heart`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    const prediction = await response.json();
+                    displayHeartPredictionResult(prediction);
+                    generateHeartRecommendations(prediction, requestData);
+                    loadDashboardData();
+                } else {
+                    const errorData = await response.json();
+                    showError('heart', errorData.message || 'Error making heart disease prediction. Please try again.');
+                }
+            } catch (error) {
+                console.error('Heart prediction error:', error);
+                showError('heart', 'Connection error. Please try again.');
+            } finally {
+                document.getElementById('heartPredictionLoading').classList.remove('show');
+            }
+        }
+
+        function displayHeartPredictionResult(prediction) {
+            const resultDiv = document.getElementById('heartPredictionResult');
+            const resultValue = document.getElementById('heartResultValue');
+            const resultMessage = document.getElementById('heartResultMessage');
+
+            const risk = prediction.prediction === 1 ? 'POSITIVE' : 'NEGATIVE';
+            const riskLevel = prediction.prediction === 1 ? 'HIGH' : 'LOW';
+            const probability = prediction.prediction === 1 ? 
+                (prediction.probabilityHeart * 100).toFixed(1) : 
+                (prediction.probabilityNoHeart * 100).toFixed(1);
+
+            resultValue.textContent = `Heart Disease Risk: ${risk} - ${riskLevel} (${probability}%)`;
+            resultValue.parentElement.style.color = prediction.prediction === 1 ? '#c33' : '#3c3';
+
+            const messageClass = prediction.prediction === 1 ? 'risk-high' : 'risk-low';
+            resultMessage.textContent = prediction.message || (prediction.prediction === 1 ? 
+                'Positive risk of heart disease detected. Please consult with a cardiologist immediately.' :
+                'Negative for heart disease. Continue maintaining a healthy lifestyle and regular checkups.');
+            resultMessage.className = `result-message ${messageClass}`;
+
+            resultDiv.classList.add('show');
+        }
+
+        function generateHeartRecommendations(prediction, inputs) {
+            const recList = document.getElementById('heartRecommendationsList');
+            recList.innerHTML = '';
+
+            const recommendations = [];
+
+            // High cholesterol
+            if (inputs.chol > 240) {
+                recommendations.push({
+                    text: 'Reduce cholesterol intake - limit saturated fats',
+                    category: 'DIET',
+                    priority: 1
+                });
+            }
+
+            // High resting BP
+            if (inputs.trestbps > 140) {
+                recommendations.push({
+                    text: 'Monitor blood pressure regularly and reduce sodium intake',
+                    category: 'MONITORING',
+                    priority: 1
+                });
+            }
+
+            // High heart rate
+            if (inputs.thalach < 100) {
+                recommendations.push({
+                    text: 'Improve cardiovascular fitness with moderate exercise',
+                    category: 'EXERCISE',
+                    priority: 1
+                });
+            }
+
+            // Advanced age
+            if (inputs.age > 55) {
+                recommendations.push({
+                    text: 'Schedule regular cardiac checkups',
+                    category: 'MEDICAL',
+                    priority: 1
+                });
+            }
+
+            recommendations.push({
+                text: 'Avoid smoking and limit alcohol consumption',
+                category: 'LIFESTYLE',
+                priority: 1
+            });
+
+            recommendations.push({
+                text: 'Consult with a cardiologist',
+                category: 'MEDICAL',
+                priority: 2
+            });
+
+            recommendations.sort((a, b) => a.priority - b.priority);
+
+            recommendations.forEach(rec => {
+                const item = document.createElement('div');
+                item.className = 'recommendation-item';
+                item.innerHTML = `
+                    <div class="recommendation-category">${rec.category}</div>
+                    <div class="recommendation-text">✓ ${rec.text}</div>
+                    <div class="recommendation-details">
+                        <span class="rec-detail"><i class="fas fa-star"></i> Priority: ${rec.priority === 1 ? 'High' : 'Medium'}</span>
+                        <span class="rec-detail"><i class="fas fa-calendar"></i> Duration: 4-8 weeks</span>
+                    </div>
+                `;
+                recList.appendChild(item);
+            });
+        }
+
         // ===== DASHBOARD DATA FUNCTIONS =====
         async function loadDashboardData() {
             // Simulate loading dashboard data
@@ -2760,9 +3111,24 @@
         }
 
         function loadCharts() {
+            // Helper function to safely create charts
+            function createChart(canvasId, config) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return null;
+                
+                const chartKey = canvasId.replace('Chart', '');
+                if (charts[chartKey]) charts[chartKey].destroy();
+                
+                try {
+                    return new Chart(canvas, config);
+                } catch (e) {
+                    console.warn(`Failed to create chart ${canvasId}:`, e);
+                    return null;
+                }
+            }
+
             // Weekly Trend Chart
-            if (charts.weeklyTrend) charts.weeklyTrend.destroy();
-            charts.weeklyTrend = new Chart(document.getElementById('weeklyTrendChart'), {
+            charts.weeklyTrend = createChart('weeklyTrendChart', {
                 type: 'line',
                 data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -2782,8 +3148,7 @@
             });
 
             // Monthly Trend Chart
-            if (charts.monthlyTrend) charts.monthlyTrend.destroy();
-            charts.monthlyTrend = new Chart(document.getElementById('monthlyTrendChart'), {
+            charts.monthlyTrend = createChart('monthlyTrendChart', {
                 type: 'line',
                 data: {
                     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -2803,8 +3168,7 @@
             });
 
             // Risk Distribution
-            if (charts.riskDistribution) charts.riskDistribution.destroy();
-            charts.riskDistribution = new Chart(document.getElementById('riskDistributionChart'), {
+            charts.riskDistribution = createChart('riskDistributionChart', {
                 type: 'bar',
                 data: {
                     labels: ['Low Risk', 'Medium Risk', 'High Risk', 'Critical'],
@@ -2822,8 +3186,7 @@
             });
 
             // Diabetic Distribution
-            if (charts.diabeticDistribution) charts.diabeticDistribution.destroy();
-            charts.diabeticDistribution = new Chart(document.getElementById('diabeticDistributionChart'), {
+            charts.diabeticDistribution = createChart('diabeticDistributionChart', {
                 type: 'doughnut',
                 data: {
                     labels: ['Non-Diabetic', 'Diabetic'],
@@ -2839,8 +3202,7 @@
             });
 
             // Glucose History
-            if (charts.glucoseHistory) charts.glucoseHistory.destroy();
-            charts.glucoseHistory = new Chart(document.getElementById('glucoseHistoryChart'), {
+            charts.glucoseHistory = createChart('glucoseHistoryChart', {
                 type: 'line',
                 data: {
                     labels: Array.from({length: 10}, (_, i) => `Day ${i+1}`),
@@ -2860,8 +3222,7 @@
             });
 
             // BMI Trend
-            if (charts.bmiTrend) charts.bmiTrend.destroy();
-            charts.bmiTrend = new Chart(document.getElementById('bmiTrendChart'), {
+            charts.bmiTrend = createChart('bmiTrendChart', {
                 type: 'line',
                 data: {
                     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],

@@ -285,5 +285,17 @@ public class AuthService {
 
         return null;
     }
+
+    /**
+     * Get user by username
+     */
+    public User getUserByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return null;
+        }
+        
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.orElse(null);
+    }
 }
 
