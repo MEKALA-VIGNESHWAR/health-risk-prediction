@@ -14,31 +14,23 @@
     <groupId>com.example</groupId>
     <artifactId>realtime-app</artifactId>
     <version>1.0.0</version>
-    <name>RealTime Application</name>
-    <description>Real-time application with Spring Boot</description>
+    <name>RealTime Health Risk Prediction</name>
+    <description>Real-time health risk prediction system with Supabase PostgreSQL</description>
 
     <properties>
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <python.script.path>${basedir}/../ml/diabetes/src/diabetes_prediction.py</python.script.path>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web Starter -->
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA - NOT NEEDED (using Firestore instead of SQL) -->
-        <!-- If you need SQL database later, uncomment this -->
-        <!-- <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency> -->
-
-        <!-- Supabase PostgreSQL with JPA/Hibernate -->
+        <!-- Spring Data JPA (Supabase PostgreSQL via Hibernate) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -48,73 +40,58 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.3</version>
-        </dependency>
-
-        <!-- H2 Database for local development (fallback) -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Supabase Java Client -->
+        <!-- Jackson JSON -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-        <!-- REST Client for Supabase REST API -->
+        <!-- WebFlux (Supabase REST API client) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
-        <!-- Lombok for reducing boilerplate -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- Spring Boot DevTools -->
+        <!-- Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Spring Boot Test Starter -->
+        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Apache Commons for utilities -->
+        <!-- Apache Commons IO -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.13.0</version>
         </dependency>
 
-        <!-- JSON validation -->
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- Spring Security for BCrypt password encoding -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Copy frontend files to static folder -->
+            <!-- Copy frontend files into the JAR's static/ folder -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -138,6 +115,9 @@
                                         <exclude>.env*</exclude>
                                         <exclude>*.log</exclude>
                                         <exclude>package*.json</exclude>
+                                        <exclude>Dockerfile</exclude>
+                                        <exclude>nginx.conf</exclude>
+                                        <exclude>supabase-config.js</exclude>
                                     </excludes>
                                 </resource>
                             </resources>
@@ -146,7 +126,7 @@
                 </executions>
             </plugin>
 
-            <!-- Spring Boot Plugin -->
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

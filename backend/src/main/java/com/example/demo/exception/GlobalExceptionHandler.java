@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle RuntimeException (which wraps Firestore errors)
+     * Handle RuntimeException (which wraps database/service errors)
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(

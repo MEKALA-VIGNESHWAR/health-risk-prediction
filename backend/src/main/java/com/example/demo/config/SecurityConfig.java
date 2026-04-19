@@ -1,7 +1,6 @@
 package com.example.demo.config;
 
 import com.example.demo.security.JwtAuthenticationFilter;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,8 +10,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
@@ -45,7 +42,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/doctor/**").permitAll()
                 .requestMatchers("/api/dashboard/**").permitAll()
                 .requestMatchers("/api/notes/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 
                 // Require authentication for other API endpoints
                 .requestMatchers("/api/**").authenticated()
@@ -55,7 +51,6 @@ public class SecurityConfig {
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .httpBasic(basic -> basic.disable())
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .formLogin(form -> form.disable());
 
         return http.build();

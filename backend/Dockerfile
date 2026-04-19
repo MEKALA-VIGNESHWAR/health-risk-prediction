@@ -1,35 +1,42 @@
-# Backend Dockerfile
-FROM eclipse-temurin:21-jdk-alpine
+# ============================================
+# Multi-stage Dockerfile for RealTime Backend
+# ============================================
+
+# --- Build Stage ---
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
-# Copy Maven wrapper and configuration
-COPY .mvn /app/.mvn
-COPY mvnw /app/mvnw
-COPY pom.xml /app/pom.xml
+# Copy Maven wrapper and config
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
 
-# Download dependencies
-RUN chmod +x /app/mvnw && /app/mvnw dependency:resolve
+# Make wrapper executable and download deps
+RUN chmod +x mvnw && ./mvnw dependency:resolve -B
+
+# Copy frontend (needed for maven-resources-plugin to embed in JAR)
+COPY ../frontend ../frontend
 
 # Copy source code
-COPY src /app/src
+COPY src src
 
-# Build the application
-RUN /app/mvnw clean package -DskipTests
+# Build fat JAR
+RUN ./mvnw clean package -DskipTests -B
 
-# Runtime stage
-FROM eclipse-temurin:21-jdk-alpine
+# --- Runtime Stage ---
+FROM eclipse-temurin:21-jre-alpine
+
 WORKDIR /app
 
-# Copy JAR from build stage
-COPY --from=0 /app/target/realtime-app-1.0.0.jar /app/realtime-app.jar
+# Copy JAR from builder
+COPY --from=builder /app/target/realtime-app-1.0.0.jar app.jar
 
-# Expose port
+# Expose port (configurable via PORT env var)
 EXPOSE 8080
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget -q -O- http://localhost:8080 || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget -q -O- http://localhost:${PORT:-8080}/api/health || exit 1
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "/app/realtime-app.jar"]
+# Run with production settings
+ENTRYPOINT ["java", "-Xmx512m", "-jar", "app.jar"]

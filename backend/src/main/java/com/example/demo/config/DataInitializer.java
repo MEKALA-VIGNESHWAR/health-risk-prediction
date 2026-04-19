@@ -13,6 +13,7 @@ import java.util.UUID;
 
 /**
  * DataInitializer - Create default test users on application startup
+ * Gracefully handles database unavailability
  */
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,16 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
+        try {
+            initializeUsers();
+        } catch (Exception e) {
+            log.warn("⚠ Could not initialize test users (database may be unavailable): {}", e.getMessage());
+            log.warn("⚠ Users will be created when the database becomes available via /api/auth/register");
+        }
+    }
+
+    private void initializeUsers() {
         log.info("Initializing test users...");
 
         // Create test patient user if not exists

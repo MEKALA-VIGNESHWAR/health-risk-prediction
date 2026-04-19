@@ -1,21 +1,66 @@
+# ============================================
 # Build output
+# ============================================
 target/
 *.jar
 *.class
+*.war
 
-# Firebase / Google credentials
+# ============================================
+# Database files (H2 legacy)
+# ============================================
+data/*.mv.db
+data/*.trace.db
+*.db
+
+# ============================================
+# Credentials & Secrets
+# ============================================
 firebase-adminsdk.json
 *.json
+!package.json
+!package-lock.json
 
 # Environment files
 .env
 .env.local
 .env.*.local
-application.properties
+.env.production
 
-# IDE files
+# ============================================
+# IDE & Editor
+# ============================================
 .vscode/
 .idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
 
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
 # Logs
+# ============================================
 *.log
+logs/
+
+# ============================================
+# Node / Frontend
+# ============================================
+node_modules/
+
+# ============================================
+# Maven wrapper (already in repo)
+# ============================================
+!.mvn/wrapper/maven-wrapper.jar
