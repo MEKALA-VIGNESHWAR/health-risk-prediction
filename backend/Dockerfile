@@ -15,7 +15,7 @@ COPY mvnw pom.xml ./
 RUN chmod +x mvnw && ./mvnw dependency:resolve -B
 
 # Copy frontend (needed for maven-resources-plugin to embed in JAR)
-COPY ../frontend ../frontend
+COPY frontend ./frontend
 
 # Copy source code
 COPY src src
