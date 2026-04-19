@@ -176,14 +176,7 @@
                         </button>
                     </form>
 
-                    <!-- Demo Credentials Info -->
-                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-slide-up" style="animation-delay: 0.45s;">
-                        <p class="text-xs text-blue-700 font-semibold mb-2">💡 Demo Credentials:</p>
-                        <div class="text-xs text-blue-600 space-y-1">
-                            <p><span class="font-semibold">Patient:</span> user@gmail.com / password123</p>
-                            <p><span class="font-semibold">Doctor:</span> doctor@gmail.com / password123</p>
-                        </div>
-                    </div>
+
 
                     <div class="mt-6 text-center animate-slide-up" style="animation-delay: 0.5s;">
                         <p class="text-gray-600 text-sm">
@@ -427,10 +420,7 @@
                     <div class="bg-gradient-to-br from-red-500/20 to-pink-500/10 border border-red-500/30 rounded-2xl p-6 animate-slide-left" style="animation-delay: 0.4s;">
                         <h3 class="text-xl font-bold text-white mb-4">🔔 Health Alerts</h3>
                         <div id="healthAlertsList" class="space-y-3">
-                            <div class="bg-black/40 rounded-lg p-3 border-l-4 border-yellow-500">
-                                <p class="text-yellow-300 text-sm font-semibold">⚠️ Monitor Closely</p>
-                                <p class="text-gray-300 text-xs mt-1">Risk increased by 5% this week</p>
-                            </div>
+                            <div class="text-gray-400 text-center py-4 text-sm">No new alerts</div>
                         </div>
                     </div>
 
@@ -734,20 +724,7 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="highRiskModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
-        <div class="bg-gradient-to-br from-gray-900 to-black border border-red-500/50 rounded-2xl max-w-2xl w-full max-h-96 overflow-auto animate-slide-up">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-white">⚠️ High Risk Predictions</h3>
-                    <button onclick="closeHighRiskModal()" class="text-gray-400 hover:text-white text-2xl">×</button>
-                </div>
-                <div id="highRiskList" class="space-y-4">
-                    <p class="text-gray-300">Loading...</p>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- DOCTOR DASHBOARD PAGE -->
     <div id="doctorDashboardPage" class="hidden min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
@@ -759,7 +736,10 @@
                         <h1 class="text-4xl font-bold text-white mb-2">👨‍⚕️ Doctor Dashboard</h1>
                         <p class="text-purple-300">Monitor and manage your patients' health</p>
                     </div>
-                    <button onclick="handleLogout()" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold">Logout</button>
+                    <div class="flex items-center gap-6">
+                        <span id="doctorDashboardUserName" class="text-purple-300 font-semibold text-lg"></span>
+                        <button onclick="handleLogout()" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold">Logout</button>
+                    </div>
                 </div>
             </div>
 
@@ -982,7 +962,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const API_BASE_URL = 'http://localhost:8080/api';
+        const API_BASE_URL = (window.location.protocol === 'file:' || (window.location.hostname === 'localhost' && window.location.port !== '8080')) ? 'http://localhost:8080/api' : '/api';
 
         console.log('Application initialized. API Base URL:', API_BASE_URL);
 
@@ -1026,6 +1006,7 @@
             document.querySelectorAll('[id$="Page"]').forEach(page => {
                 page.classList.add('hidden');
             });
+            window.scrollTo(0, 0);
             
             // Show selected page
             const selectedPage = document.getElementById(pageName);
@@ -2272,6 +2253,12 @@
             try {
                 console.log('Loading doctor dashboard...');
                 const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (user) {
+                    const docNameEl = document.getElementById('doctorDashboardUserName');
+                    if (docNameEl) docNameEl.textContent = (user.firstName || '') + ' ' + (user.lastName || '');
+                }
                 
                 const response = await fetch(`${API_BASE_URL}/doctor/patients`, {
                     method: 'GET',
