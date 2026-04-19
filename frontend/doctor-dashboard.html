@@ -24,6 +24,26 @@
             --shadow-lg: 0 8px 30px rgba(0,0,0,0.1); --shadow-xl: 0 15px 50px rgba(0,0,0,0.12);
             --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
         }
+        [data-theme="dark"] {
+            --bg: #0f172a; --surface: #1e293b;
+            --text: #f1f5f9; --text-secondary: #cbd5e1; --text-muted: #64748b;
+            --border: #334155; --border-light: #1e293b;
+            --primary-50: rgba(14,165,233,0.08); --primary-light: rgba(14,165,233,0.15);
+            --success-light: rgba(16,185,129,0.15); --warning-light: rgba(245,158,11,0.15);
+            --danger-light: rgba(239,68,68,0.15);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.5); --shadow-xl: 0 15px 50px rgba(0,0,0,0.6);
+        }
+        [data-theme="dark"] .header { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .modal { background: #1e293b; }
+        [data-theme="dark"] .modal-header { background: #1e293b; }
+        [data-theme="dark"] .data-table thead th { background: #0f172a; }
+        [data-theme="dark"] .detail-item { background: #0f172a; }
+        [data-theme="dark"] .notes-area { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        [data-theme="dark"] .notification-dropdown { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .filter-select, [data-theme="dark"] .search-input, [data-theme="dark"] .filter-input { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        [data-theme="dark"] .alert-panel { background: linear-gradient(135deg, #991b1b, #dc2626); }
+        [data-theme="dark"] .user-badge { background: linear-gradient(135deg, #1e293b, #0f172a); }
         body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); -webkit-font-smoothing: antialiased; }
 
         /* ===== HEADER ===== */
@@ -183,6 +203,8 @@
         /* Responsive */
         @media (max-width: 768px) { .header { padding: 0 16px; } .container { padding: 16px; } .search-filter-bar { flex-direction: column; } .search-input { min-width: 100%; } .stats-grid { grid-template-columns: 1fr 1fr; } .charts-grid { grid-template-columns: 1fr; } .user-badge { display: none; } .notification-dropdown { width: 320px; right: -60px; } .detail-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
+        .theme-toggle { background: transparent; border: 1px solid var(--border); width: 40px; height: 40px; border-radius: 10px; cursor: pointer; font-size: 16px; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .theme-toggle:hover { background: var(--primary-50); color: var(--primary); border-color: var(--primary-light); }
     </style>
 </head>
 <body>
@@ -207,6 +229,9 @@
                     </div>
                 </div>
             </div>
+            <button class="theme-toggle" onclick="toggleDarkMode()" id="themeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
             <div class="user-badge">
                 <div class="user-avatar" id="userAvatar">D</div>
                 <div><div class="user-name" id="userFullName">Dr. Doctor</div><div class="user-role">Physician</div></div>
@@ -389,22 +414,23 @@
         const summary = data.summary || {};
         document.getElementById('statTotalPatients').textContent = summary.totalPatients || 0;
         document.getElementById('statTotalPredictions').textContent = summary.totalPredictions || 0;
-        document.getElementById('statHighRisk').textContent = summary.highRiskCount || 0;
-        const avgRisk = summary.totalPredictions > 0 ? ((summary.highRiskCount / summary.totalPredictions) * 100).toFixed(1) : 0;
+        document.getElementById('statHighRisk').textContent = summary.patientsAtHighRisk || summary.highRiskCount || 0;
+        const hrCount = summary.patientsAtHighRisk || summary.highRiskCount || 0;
+        const avgRisk = summary.totalPredictions > 0 ? ((hrCount / summary.totalPredictions) * 100).toFixed(1) : '0';
         document.getElementById('statAvgRisk').textContent = avgRisk + '%';
 
         const alerts = data.patientsAtRisk || [];
         if (alerts.length > 0) {
             document.getElementById('alertPanel').classList.add('show');
-            document.getElementById('alertPatientsList').innerHTML = alerts.slice(0, 5).map(a => `<div class="alert-patient"><span><i class="fas fa-user"></i> ${a.patientName}</span><span>${a.riskLevel} Risk — ${((a.riskProbability || 0)*100).toFixed(0)}%</span></div>`).join('');
+            document.getElementById('alertPatientsList').innerHTML = alerts.slice(0, 5).map(a => `<div class="alert-patient"><span><i class="fas fa-user"></i> ${a.patientName}</span><span>${a.currentRiskLevel || a.riskLevel || 'N/A'} Risk — ${((a.currentProbability || a.riskProbability || 0)*100).toFixed(0)}%</span></div>`).join('');
         }
 
         const allAlerts = data.alerts || [];
         if (allAlerts.length > 0) {
             document.getElementById('recentActivityBody').innerHTML = allAlerts.slice(0, 10).map(a => {
-                const riskCls = (a.riskLevel||'').toLowerCase();
+                const riskCls = (a.severity || a.riskLevel||'').toLowerCase();
                 const badgeCls = riskCls==='high'||riskCls==='critical'?'high':riskCls==='medium'?'medium':'low';
-                return `<tr><td><strong>${a.patientName||'Patient'}</strong></td><td>Diabetes</td><td>${a.alertType==='HIGH_RISK'?'Positive':'Under Review'}</td><td><span class="badge badge-${badgeCls}">${a.riskLevel||'N/A'}</span></td><td>${a.timestamp?new Date(a.timestamp).toLocaleDateString():'N/A'}</td></tr>`;
+                return `<tr><td><strong>${a.patientName||'Patient'}</strong></td><td>Diabetes</td><td>${a.alertType==='HIGH_RISK'?'Positive':'Under Review'}</td><td><span class="badge badge-${badgeCls}">${a.severity || a.riskLevel||'N/A'}</span></td><td>${a.timestamp?new Date(a.timestamp).toLocaleDateString():'N/A'}</td></tr>`;
             }).join('');
         } else { document.getElementById('recentActivityBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px">No recent activity</td></tr>'; }
         buildCharts();
@@ -679,7 +705,24 @@
     function createBarChart(id,key,labels,data) { const c=document.getElementById(id); if(!c)return; if(charts[key])charts[key].destroy(); charts[key]=new Chart(c,{type:'bar',data:{labels,datasets:[{label:'Count',data,backgroundColor:['#10b981','#f59e0b','#ef4444','#dc2626'],borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f1f5f9'}},x:{grid:{display:false}}}}}); }
     function createBarChartH(id,key,labels,data) { const c=document.getElementById(id); if(!c)return; if(charts[key])charts[key].destroy(); charts[key]=new Chart(c,{type:'bar',data:{labels,datasets:[{label:'Patients',data,backgroundColor:['#10b981','#f59e0b','#ef4444','#dc2626'],borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:'#f1f5f9'}},y:{grid:{display:false}}}}}); }
 
-    window.addEventListener('DOMContentLoaded', initializePage);
+    // ===== DARK MODE =====
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+    }
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadTheme();
+        initializePage();
+    });
     </script>
 </body>
 </html>

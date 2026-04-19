@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Supabase Configuration - Sets up Supabase credentials and REST API client
@@ -42,9 +43,10 @@ public class SupabaseConfig {
     }
 
     /**
-     * WebClient bean for REST API calls to Supabase
+     * WebClient bean for REST API calls to Supabase (public)
      */
     @Bean
+    @Qualifier("supabasePublicClient")
     public WebClient supabaseWebClient() {
         return WebClient.builder()
                 .baseUrl(supabaseUrl)
@@ -57,6 +59,7 @@ public class SupabaseConfig {
      * WebClient bean for backend operations (with service role key)
      */
     @Bean
+    @Qualifier("supabaseServiceClient")
     public WebClient supabaseBackendClient() {
         return WebClient.builder()
                 .baseUrl(supabaseUrl)
@@ -65,3 +68,4 @@ public class SupabaseConfig {
                 .build();
     }
 }
+

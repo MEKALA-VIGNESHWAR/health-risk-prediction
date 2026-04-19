@@ -42,6 +42,41 @@
             --radius-xl: 20px;
         }
 
+        /* ===== DARK MODE ===== */
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --text: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #1e293b;
+            --primary-50: rgba(14,165,233,0.08);
+            --primary-light: rgba(14,165,233,0.15);
+            --success-light: rgba(16,185,129,0.15);
+            --warning-light: rgba(245,158,11,0.15);
+            --danger-light: rgba(239,68,68,0.15);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+            --shadow-xl: 0 15px 50px rgba(0,0,0,0.6);
+        }
+        [data-theme="dark"] .header { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .health-summary { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        [data-theme="dark"] .form-group input,
+        [data-theme="dark"] .form-group select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        [data-theme="dark"] .form-group input::placeholder { color: #475569; }
+        [data-theme="dark"] .data-table thead th { background: #0f172a; }
+        [data-theme="dark"] .metric { background: #0f172a; }
+        [data-theme="dark"] .factor-item { background: #0f172a; }
+        [data-theme="dark"] .reco-item { background: #0f172a; }
+        [data-theme="dark"] .reco-item:hover { background: rgba(14,165,233,0.08); }
+        [data-theme="dark"] .chart-time-btn { background: #0f172a; border-color: #334155; color: #94a3b8; }
+        [data-theme="dark"] .chart-time-btn:hover:not(.active) { background: rgba(14,165,233,0.08); }
+        [data-theme="dark"] .notification-dropdown { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .notif-item:hover { background: rgba(14,165,233,0.08); }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg);
@@ -365,6 +400,90 @@
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .page-info { font-size: 13px; color: var(--text-muted); padding: 0 8px; }
 
+        /* ===== DARK MODE TOGGLE ===== */
+        .theme-toggle {
+            background: transparent; border: 1px solid var(--border);
+            width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+            font-size: 16px; color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover { background: var(--primary-50); color: var(--primary); border-color: var(--primary-light); }
+
+        /* ===== SLIDER STYLES ===== */
+        .slider-group { margin-bottom: 0; }
+        .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .slider-header label { margin-bottom: 0 !important; }
+        .slider-value {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 20px; font-size: 12px; font-weight: 700;
+            min-width: 42px; text-align: center;
+        }
+        .slider-range-labels { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; color: var(--text-muted); }
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; height: 8px;
+            background: linear-gradient(90deg, var(--success) 0%, var(--warning) 50%, var(--danger) 100%);
+            border-radius: 4px; outline: none; cursor: pointer; transition: all 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px;
+            background: white; border: 3px solid var(--primary);
+            border-radius: 50%; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15); box-shadow: 0 3px 10px rgba(14,165,233,0.3);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 22px; height: 22px; background: white;
+            border: 3px solid var(--primary); border-radius: 50%;
+            cursor: pointer;
+        }
+        .slider-status { font-size: 11px; font-weight: 600; margin-top: 4px; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+        .slider-status.normal { background: var(--success-light); color: #065f46; }
+        .slider-status.elevated { background: var(--warning-light); color: #92400e; }
+        .slider-status.high { background: var(--danger-light); color: #991b1b; }
+
+        /* ===== BMI CALCULATOR ===== */
+        .bmi-calculator {
+            background: linear-gradient(135deg, var(--primary-50), rgba(99,102,241,0.05));
+            border: 1px dashed var(--primary); border-radius: var(--radius-md);
+            padding: 16px; margin-bottom: 16px;
+        }
+        .bmi-calculator h4 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .bmi-calc-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+        .bmi-calc-grid .form-group { margin-bottom: 0; }
+        .bmi-calc-btn {
+            padding: 10px 16px; background: var(--primary); color: white;
+            border: none; border-radius: var(--radius-sm); cursor: pointer;
+            font-weight: 600; font-size: 12px; font-family: 'Inter', sans-serif;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .bmi-calc-btn:hover { background: var(--primary-dark); }
+        .bmi-result { margin-top: 10px; padding: 10px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; display: none; }
+        .bmi-result.show { display: flex; align-items: center; gap: 8px; }
+
+        /* ===== HEALTH TIPS ===== */
+        .health-tips-panel {
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+            border: 1px solid #bbf7d0; border-radius: var(--radius-lg);
+            padding: 24px; margin-bottom: 20px;
+        }
+        [data-theme="dark"] .health-tips-panel { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+        .health-tips-panel h3 { font-size: 15px; font-weight: 700; color: #065f46; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        [data-theme="dark"] .health-tips-panel h3 { color: #6ee7b7; }
+        .tip-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(16,185,129,0.1); font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .tip-item:last-child { border-bottom: none; }
+        .tip-icon { font-size: 18px; flex-shrink: 0; }
+
+        /* ===== VALIDATION ===== */
+        .form-group.valid input, .form-group.valid select { border-color: var(--success); }
+        .form-group.invalid input, .form-group.invalid select { border-color: var(--danger); }
+        .validation-msg { font-size: 11px; margin-top: 4px; font-weight: 500; }
+        .validation-msg.error { color: var(--danger); }
+        .validation-msg.ok { color: var(--success); }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .header { padding: 0 16px; height: 64px; }
@@ -378,6 +497,7 @@
             .prediction-metrics { grid-template-columns: 1fr; }
             .nav-tabs { flex-wrap: nowrap; overflow-x: auto; }
             .notification-dropdown { width: 320px; right: -60px; }
+            .bmi-calc-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } .header-right { gap: 8px; } }
     </style>
@@ -406,6 +526,9 @@
                     </div>
                 </div>
             </div>
+            <button class="theme-toggle" onclick="toggleDarkMode()" id="themeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
             <div class="user-badge">
                 <div class="user-avatar" id="userAvatar">P</div>
                 <div>
@@ -506,6 +629,17 @@
                 </div>
             </div>
 
+            <!-- Health Tips Panel -->
+            <div class="health-tips-panel" id="healthTipsPanel">
+                <h3><i class="fas fa-heartbeat"></i> Daily Health Tips</h3>
+                <div id="healthTipsContent">
+                    <div class="tip-item"><span class="tip-icon">💧</span><div>Drink at least 8 glasses of water daily to maintain proper hydration and support glucose metabolism.</div></div>
+                    <div class="tip-item"><span class="tip-icon">🚶</span><div>Walk for at least 30 minutes daily — even light walking post-meals reduces blood sugar spikes by up to 30%.</div></div>
+                    <div class="tip-item"><span class="tip-icon">🥦</span><div>Include fiber-rich foods like broccoli, beans, and whole grains to slow glucose absorption.</div></div>
+                    <div class="tip-item"><span class="tip-icon">😴</span><div>Aim for 7-9 hours of quality sleep — poor sleep increases insulin resistance by up to 40%.</div></div>
+                </div>
+            </div>
+
             <!-- Key Factors & Recommendations -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px;">
                 <div class="card">
@@ -555,18 +689,97 @@
                     </div>
                 </div>
                 <div id="diabetesMsg" class="msg"></div>
+
+                <!-- BMI Calculator -->
+                <div class="bmi-calculator">
+                    <h4><i class="fas fa-calculator"></i> BMI Auto-Calculator</h4>
+                    <div class="bmi-calc-grid">
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="heightCm" min="100" max="250" step="1" placeholder="e.g. 170" oninput="calculateBMI()">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="weightKg" min="20" max="300" step="0.1" placeholder="e.g. 70" oninput="calculateBMI()">
+                        </div>
+                        <button type="button" class="bmi-calc-btn" onclick="calculateBMI()"><i class="fas fa-sync-alt"></i> Calc</button>
+                    </div>
+                    <div class="bmi-result" id="bmiResult"></div>
+                </div>
+
                 <form onsubmit="handleDiabetesPrediction(event)" id="diabetesForm">
                     <div class="form-grid">
-                        <div class="form-group"><label>Pregnancies</label><input type="number" id="pregnancies" min="0" max="17" step="1" placeholder="0-17" required></div>
-                        <div class="form-group"><label>Glucose (mg/dL)</label><input type="number" id="glucose" min="0" step="0.1" placeholder="e.g. 120" required></div>
-                        <div class="form-group"><label>Blood Pressure (mmHg)</label><input type="number" id="bloodPressure" min="0" step="0.1" placeholder="e.g. 72" required></div>
-                        <div class="form-group"><label>Skin Thickness (mm)</label><input type="number" id="skinThickness" min="0" step="0.1" placeholder="e.g. 35" required></div>
-                        <div class="form-group"><label>Insulin (µU/mL)</label><input type="number" id="insulin" min="0" step="0.1" placeholder="e.g. 80" required></div>
-                        <div class="form-group"><label>BMI (kg/m²)</label><input type="number" id="bmi" min="0" step="0.1" placeholder="e.g. 25.5" required></div>
-                        <div class="form-group"><label>Diabetes Pedigree</label><input type="number" id="dpf" min="0" step="0.001" placeholder="e.g. 0.627" required></div>
-                        <div class="form-group"><label>Age (years)</label><input type="number" id="age_diabetes" min="1" step="1" placeholder="e.g. 45" required></div>
+                        <!-- Pregnancies Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Pregnancies</label>
+                                <span class="slider-value" id="pregnanciesVal">0</span>
+                            </div>
+                            <input type="range" id="pregnancies" min="0" max="17" step="1" value="0" oninput="updateSlider('pregnancies', this.value)">
+                            <div class="slider-range-labels"><span>0</span><span>17</span></div>
+                        </div>
+                        <!-- Glucose Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Glucose (mg/dL)</label>
+                                <span class="slider-value" id="glucoseVal">100</span>
+                            </div>
+                            <input type="range" id="glucose" min="0" max="300" step="1" value="100" oninput="updateSlider('glucose', this.value)">
+                            <div class="slider-range-labels"><span>0</span><span>300</span></div>
+                            <div class="slider-status" id="glucoseStatus"></div>
+                        </div>
+                        <!-- Blood Pressure Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Blood Pressure (mmHg)</label>
+                                <span class="slider-value" id="bloodPressureVal">80</span>
+                            </div>
+                            <input type="range" id="bloodPressure" min="0" max="200" step="1" value="80" oninput="updateSlider('bloodPressure', this.value)">
+                            <div class="slider-range-labels"><span>0</span><span>200</span></div>
+                            <div class="slider-status" id="bloodPressureStatus"></div>
+                        </div>
+                        <!-- Skin Thickness -->
+                        <div class="form-group">
+                            <label>Skin Thickness (mm)</label>
+                            <input type="number" id="skinThickness" min="0" max="99" step="1" placeholder="e.g. 35" value="20" required oninput="validateField(this, 0, 99)">
+                        </div>
+                        <!-- Insulin Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Insulin (µU/mL)</label>
+                                <span class="slider-value" id="insulinVal">80</span>
+                            </div>
+                            <input type="range" id="insulin" min="0" max="900" step="1" value="80" oninput="updateSlider('insulin', this.value)">
+                            <div class="slider-range-labels"><span>0</span><span>900</span></div>
+                            <div class="slider-status" id="insulinStatus"></div>
+                        </div>
+                        <!-- BMI Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>BMI (kg/m²)</label>
+                                <span class="slider-value" id="bmiVal">25.0</span>
+                            </div>
+                            <input type="range" id="bmi" min="10" max="70" step="0.1" value="25.0" oninput="updateSlider('bmi', this.value)">
+                            <div class="slider-range-labels"><span>10</span><span>70</span></div>
+                            <div class="slider-status" id="bmiStatus"></div>
+                        </div>
+                        <!-- Diabetes Pedigree -->
+                        <div class="form-group">
+                            <label>Diabetes Pedigree Function</label>
+                            <input type="number" id="dpf" min="0.05" max="2.5" step="0.001" placeholder="e.g. 0.627" value="0.5" required oninput="validateField(this, 0.05, 2.5)">
+                            <div class="validation-msg" id="dpfValidation"></div>
+                        </div>
+                        <!-- Age Slider -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Age (years)</label>
+                                <span class="slider-value" id="age_diabetesVal">30</span>
+                            </div>
+                            <input type="range" id="age_diabetes" min="1" max="100" step="1" value="30" oninput="updateSlider('age_diabetes', this.value)">
+                            <div class="slider-range-labels"><span>1</span><span>100</span></div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-full"><i class="fas fa-search"></i> Predict Diabetes Risk</button>
+                    <button type="submit" class="btn btn-primary btn-full" id="diabetesSubmitBtn"><i class="fas fa-search"></i> Predict Diabetes Risk</button>
                 </form>
             </div>
 
@@ -577,18 +790,26 @@
                 <div id="heartMsg" class="msg"></div>
                 <form onsubmit="handleHeartPrediction(event)" id="heartForm">
                     <div class="form-grid">
-                        <div class="form-group"><label>Age (years)</label><input type="number" id="age_heart" min="1" step="1" placeholder="e.g. 55" required></div>
+                        <!-- Age Slider for Heart -->
+                        <div class="form-group slider-group">
+                            <div class="slider-header">
+                                <label>Age (years)</label>
+                                <span class="slider-value" id="age_heartVal">50</span>
+                            </div>
+                            <input type="range" id="age_heart" min="1" max="100" step="1" value="50" oninput="updateSlider('age_heart', this.value)">
+                            <div class="slider-range-labels"><span>1</span><span>100</span></div>
+                        </div>
                         <div class="form-group"><label>Sex</label><select id="sex" required><option value="">Select</option><option value="0">Female</option><option value="1">Male</option></select></div>
                         <div class="form-group"><label>Chest Pain Type</label><select id="cp" required><option value="">Select</option><option value="1">Type 1 - Typical Angina</option><option value="2">Type 2 - Atypical Angina</option><option value="3">Type 3 - Non-anginal</option><option value="4">Type 4 - Asymptomatic</option></select></div>
-                        <div class="form-group"><label>Resting BP (mmHg)</label><input type="number" id="trestbps" min="0" step="0.1" placeholder="e.g. 130" required></div>
-                        <div class="form-group"><label>Cholesterol (mg/dL)</label><input type="number" id="chol" min="0" step="0.1" placeholder="e.g. 220" required></div>
+                        <div class="form-group"><label>Resting BP (mmHg)</label><input type="number" id="trestbps" min="80" max="250" step="1" placeholder="e.g. 130" required oninput="validateField(this, 80, 250)"></div>
+                        <div class="form-group"><label>Cholesterol (mg/dL)</label><input type="number" id="chol" min="100" max="600" step="1" placeholder="e.g. 220" required oninput="validateField(this, 100, 600)"></div>
                         <div class="form-group"><label>Fasting Blood Sugar > 120</label><select id="fbs" required><option value="">Select</option><option value="0">No (≤120 mg/dL)</option><option value="1">Yes (>120 mg/dL)</option></select></div>
                         <div class="form-group"><label>Resting ECG</label><select id="restecg" required><option value="">Select</option><option value="0">Normal</option><option value="1">ST-T Abnormality</option><option value="2">Left Ventricular Hypertrophy</option></select></div>
-                        <div class="form-group"><label>Max Heart Rate</label><input type="number" id="thalach" min="0" step="0.1" placeholder="e.g. 150" required></div>
+                        <div class="form-group"><label>Max Heart Rate</label><input type="number" id="thalach" min="60" max="220" step="1" placeholder="e.g. 150" required oninput="validateField(this, 60, 220)"></div>
                         <div class="form-group"><label>Exercise Angina</label><select id="exang" required><option value="">Select</option><option value="0">No</option><option value="1">Yes</option></select></div>
-                        <div class="form-group"><label>ST Depression</label><input type="number" id="oldpeak" min="0" step="0.1" placeholder="e.g. 1.5" required></div>
+                        <div class="form-group"><label>ST Depression</label><input type="number" id="oldpeak" min="0" max="7" step="0.1" placeholder="e.g. 1.5" required oninput="validateField(this, 0, 7)"></div>
                         <div class="form-group"><label>ST Slope</label><select id="slope" required><option value="">Select</option><option value="0">Upsloping</option><option value="1">Flat</option><option value="2">Downsloping</option></select></div>
-                        <div class="form-group"><label>Major Vessels (0-3)</label><input type="number" id="ca" min="0" max="3" step="1" placeholder="0-3" required></div>
+                        <div class="form-group"><label>Major Vessels (0-3)</label><input type="number" id="ca" min="0" max="3" step="1" placeholder="0-3" required oninput="validateField(this, 0, 3)"></div>
                     </div>
                     <div class="form-grid" style="margin-top: 16px;">
                         <div class="form-group"><label>Thalassemia</label><select id="thal" required><option value="">Select</option><option value="0">Normal</option><option value="1">Fixed Defect</option><option value="2">Reversible Defect</option></select></div>
@@ -1382,7 +1603,180 @@
     }
     function hideMsg(id) { document.getElementById(id).classList.remove('show'); }
 
-    window.addEventListener('DOMContentLoaded', initializePage);
+    // ===== DARK MODE =====
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // ===== SLIDER CONTROLS =====
+    function updateSlider(id, value) {
+        const valEl = document.getElementById(id + 'Val');
+        if (valEl) {
+            valEl.textContent = (id === 'bmi') ? parseFloat(value).toFixed(1) : value;
+        }
+        // Update status indicator for clinical ranges
+        updateSliderStatus(id, parseFloat(value));
+    }
+
+    function updateSliderStatus(id, val) {
+        const statusEl = document.getElementById(id + 'Status');
+        if (!statusEl) return;
+
+        const ranges = {
+            glucose: { normal: [0, 100], elevated: [100, 140], high: [140, 999], labels: ['Normal', 'Pre-diabetic', 'Diabetic Range'] },
+            bloodPressure: { normal: [0, 90], elevated: [90, 140], high: [140, 999], labels: ['Normal', 'Elevated', 'Hypertension'] },
+            insulin: { normal: [0, 166], elevated: [166, 300], high: [300, 999], labels: ['Normal', 'Elevated', 'High'] },
+            bmi: { normal: [0, 25], elevated: [25, 30], high: [30, 999], labels: ['Normal Weight', 'Overweight', 'Obese'] }
+        };
+
+        const range = ranges[id];
+        if (!range) return;
+
+        let status, label;
+        if (val < range.normal[1]) { status = 'normal'; label = `✅ ${range.labels[0]}`; }
+        else if (val < range.elevated[1]) { status = 'elevated'; label = `⚡ ${range.labels[1]}`; }
+        else { status = 'high'; label = `⚠️ ${range.labels[2]}`; }
+
+        statusEl.className = `slider-status ${status}`;
+        statusEl.textContent = label;
+    }
+
+    // Initialize slider statuses
+    function initSliders() {
+        ['glucose', 'bloodPressure', 'insulin', 'bmi'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) updateSliderStatus(id, parseFloat(el.value));
+        });
+    }
+
+    // ===== BMI CALCULATOR =====
+    function calculateBMI() {
+        const height = parseFloat(document.getElementById('heightCm')?.value);
+        const weight = parseFloat(document.getElementById('weightKg')?.value);
+        const resultEl = document.getElementById('bmiResult');
+
+        if (!height || !weight || height <= 0 || weight <= 0) {
+            if (resultEl) { resultEl.classList.remove('show'); }
+            return;
+        }
+
+        const heightM = height / 100;
+        const bmi = (weight / (heightM * heightM)).toFixed(1);
+
+        // Update BMI slider
+        const bmiSlider = document.getElementById('bmi');
+        if (bmiSlider) {
+            bmiSlider.value = Math.min(70, Math.max(10, bmi));
+            updateSlider('bmi', bmiSlider.value);
+        }
+
+        // Show BMI result
+        let category, color;
+        if (bmi < 18.5) { category = 'Underweight'; color = '#0ea5e9'; }
+        else if (bmi < 25) { category = 'Normal Weight'; color = '#10b981'; }
+        else if (bmi < 30) { category = 'Overweight'; color = '#f59e0b'; }
+        else { category = 'Obese'; color = '#ef4444'; }
+
+        if (resultEl) {
+            resultEl.innerHTML = `<i class="fas fa-check-circle" style="color:${color}"></i> BMI: <strong style="color:${color}">${bmi}</strong> — ${category}`;
+            resultEl.style.background = color + '15';
+            resultEl.style.color = color;
+            resultEl.classList.add('show');
+        }
+    }
+
+    // ===== REAL-TIME VALIDATION =====
+    function validateField(input, min, max) {
+        const val = parseFloat(input.value);
+        const group = input.closest('.form-group');
+        if (!group) return;
+
+        if (isNaN(val) || input.value === '') {
+            group.classList.remove('valid', 'invalid');
+            return;
+        }
+
+        if (val >= min && val <= max) {
+            group.classList.add('valid');
+            group.classList.remove('invalid');
+        } else {
+            group.classList.add('invalid');
+            group.classList.remove('valid');
+        }
+    }
+
+    // ===== DYNAMIC HEALTH TIPS =====
+    function updateHealthTips() {
+        const tipsContent = document.getElementById('healthTipsContent');
+        if (!tipsContent) return;
+
+        let tips = [];
+
+        // Default tips
+        tips.push({ icon: '💧', text: 'Drink at least 8 glasses of water daily to maintain proper hydration and support glucose metabolism.' });
+
+        if (latestDiabetes) {
+            const risk = (latestDiabetes.risk || latestDiabetes.riskLevel || 'LOW').toUpperCase();
+            if (risk === 'HIGH' || risk === 'CRITICAL') {
+                tips = [
+                    { icon: '🚨', text: 'Your diabetes risk is HIGH. Schedule a consultation with an endocrinologist within this week.' },
+                    { icon: '🥗', text: 'Switch to a low-glycemic diet: replace white rice with brown rice, choose whole wheat bread, and avoid sugary drinks.' },
+                    { icon: '🏃', text: 'Engage in 150 minutes of moderate exercise per week — even brisk walking counts! This can reduce risk by 58%.' },
+                    { icon: '📊', text: 'Monitor your fasting blood glucose regularly — ideally before breakfast each morning.' }
+                ];
+            } else if (risk === 'MEDIUM') {
+                tips = [
+                    { icon: '⚡', text: 'Your risk is moderate. Small lifestyle changes now can prevent diabetes. Focus on portion control.' },
+                    { icon: '🚶', text: 'Walk for 30 minutes after meals — post-meal walks reduce blood sugar spikes by up to 30%.' },
+                    { icon: '🥦', text: 'Increase fiber intake: aim for 25-30g daily through vegetables, legumes, and whole grains.' },
+                    { icon: '😴', text: 'Get 7-9 hours of quality sleep — poor sleep increases insulin resistance by up to 40%.' }
+                ];
+            } else {
+                tips.push({ icon: '🚶', text: 'Walk for at least 30 minutes daily — even light walking post-meals reduces blood sugar spikes by up to 30%.' });
+                tips.push({ icon: '🥦', text: 'Include fiber-rich foods like broccoli, beans, and whole grains to slow glucose absorption.' });
+                tips.push({ icon: '😴', text: 'Aim for 7-9 hours of quality sleep — poor sleep increases insulin resistance by up to 40%.' });
+            }
+        } else {
+            tips.push({ icon: '🚶', text: 'Walk for at least 30 minutes daily — even light walking post-meals reduces blood sugar spikes by up to 30%.' });
+            tips.push({ icon: '🥦', text: 'Include fiber-rich foods like broccoli, beans, and whole grains to slow glucose absorption.' });
+            tips.push({ icon: '😴', text: 'Aim for 7-9 hours of quality sleep — poor sleep increases insulin resistance by up to 40%.' });
+        }
+
+        if (latestHeart) {
+            const hRisk = (latestHeart.risk || 'LOW').toUpperCase();
+            if (hRisk === 'HIGH') {
+                tips.push({ icon: '❤️', text: 'Your heart disease risk is elevated. Limit sodium to under 2,300mg/day and increase omega-3 intake.' });
+                tips.push({ icon: '🧘', text: 'Practice stress management — chronic stress raises cortisol and blood pressure. Try 10 min daily meditation.' });
+            }
+        }
+
+        tipsContent.innerHTML = tips.map(t =>
+            `<div class="tip-item"><span class="tip-icon">${t.icon}</span><div>${t.text}</div></div>`
+        ).join('');
+    }
+
+    // Override updateOverview to also update health tips
+    const _originalUpdateOverview = updateOverview;
+    updateOverview = function() {
+        _originalUpdateOverview();
+        updateHealthTips();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadTheme();
+        initSliders();
+        initializePage();
+    });
     </script>
 </body>
 </html>

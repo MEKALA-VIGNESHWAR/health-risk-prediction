@@ -176,14 +176,28 @@ public class AlertController {
     }
 
     /**
-     * PUT /api/alerts/acknowledge-all - Mark all alerts as read for a user
+     * PUT /api/alerts/acknowledge-all - Mark all alerts as read for a user or all users
      */
     @PutMapping("/acknowledge-all")
     public ResponseEntity<?> acknowledgeAllAlerts(@RequestParam String userId) {
         try {
             log.info("PUT /api/alerts/acknowledge-all for user {}", userId);
-            UUID uuid = UUID.fromString(userId);
-            int updated = alertRepository.markAllReadForPatient(uuid, LocalDateTime.now());
+            
+            int updated;
+            if ("all".equalsIgnoreCase(userId)) {
+                // Doctor acknowledging all alerts system-wide
+                List<Alert> unread = alertRepository.findAllUnreadOrderBySeverity();
+                unread.forEach(a -> {
+                    a.setIsRead(true);
+                    a.setAcknowledgedAt(LocalDateTime.now());
+                });
+                alertRepository.saveAll(unread);
+                updated = unread.size();
+            } else {
+                UUID uuid = UUID.fromString(userId);
+                updated = alertRepository.markAllReadForPatient(uuid, LocalDateTime.now());
+            }
+            
             return ResponseEntity.ok(new ApiResponse("success",
                     updated + " alerts acknowledged", Map.of("count", updated)));
         } catch (Exception e) {
