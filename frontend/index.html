@@ -1947,9 +1947,9 @@
                 
                 let friendlyMessage = 'Failed to get prediction';
                 if (error.name === 'AbortError' || error.message.includes('timeout')) {
-                    friendlyMessage = '❌ Connection timeout. Make sure the backend server is running on port 8080 (http://localhost:8080)';
+                    friendlyMessage = '❌ Connection timeout. Make sure the backend server is reachable.';
                 } else if (error.message.includes('Failed to fetch') || error.message.includes('Cannot connect')) {
-                    friendlyMessage = '❌ Cannot connect to backend server. Make sure it\'s running on http://localhost:8080';
+                    friendlyMessage = '❌ Cannot connect to backend server. Make sure it is running.';
                 } else if (error.message.includes('NetworkError')) {
                     friendlyMessage = '❌ Network error. Check your internet connection and backend server status';
                 } else {
@@ -2921,7 +2921,7 @@
         function shareDoctorReport() {
             try {
                 const user = JSON.parse(localStorage.getItem('currentUser'));
-                const reportLink = `Check my health report: http://localhost:8080 - Patient ID: ${user.id}`;
+                const reportLink = `Check my health report -> Patient ID: ${user.id}`;
                 
                 if (navigator.share) {
                     navigator.share({
