@@ -342,9 +342,26 @@
         try {
             currentUser = JSON.parse(savedUser);
             if (!currentUser.role || currentUser.role !== 'doctor') { localStorage.removeItem('currentUser'); window.location.href = 'login.html'; return; }
-            const fullName = `Dr. ${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim();
-            document.getElementById('userFullName').textContent = fullName;
-            document.getElementById('userAvatar').textContent = (currentUser.firstName || 'D')[0].toUpperCase();
+            
+            // Try multiple field names for firstName/lastName (handles different API formats)
+            const firstName = currentUser.firstName || currentUser.first_name || '';
+            const lastName = currentUser.lastName || currentUser.last_name || '';
+            
+            // Build display name with fallback to username
+            let displayName;
+            if (firstName || lastName) {
+                displayName = `Dr. ${firstName} ${lastName}`.trim();
+            } else if (currentUser.username) {
+                // Capitalize username as fallback
+                const uname = currentUser.username;
+                displayName = `Dr. ${uname.charAt(0).toUpperCase() + uname.slice(1)}`;
+            } else {
+                displayName = 'Doctor';
+            }
+            
+            document.getElementById('userFullName').textContent = displayName;
+            document.getElementById('userAvatar').textContent = (firstName || currentUser.username || 'D')[0].toUpperCase();
+            document.getElementById('welcomeMsg').textContent = `Welcome, ${displayName}. Monitor patients, analyze risk predictions, and manage health assessments.`;
             loadAllData();
         } catch (e) { console.error('Init error:', e); localStorage.removeItem('currentUser'); window.location.href = 'login.html'; }
     }

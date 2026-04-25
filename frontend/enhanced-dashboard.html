@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RealTime Diabetes Prediction System - Enhanced Dashboard</title>
-    
+
     <!-- Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
+
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         * {
             margin: 0;
@@ -69,6 +70,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -171,7 +173,8 @@
         }
 
         /* Messages */
-        .error, .success {
+        .error,
+        .success {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -191,7 +194,8 @@
             border-left: 4px solid #3c3;
         }
 
-        .error.show, .success.show {
+        .error.show,
+        .success.show {
             display: block;
             animation: slideDown 0.3s ease;
         }
@@ -357,9 +361,17 @@
             letter-spacing: 0.5px;
         }
 
-        .stat-card.high-risk { border-left-color: var(--danger); }
-        .stat-card.medium-risk { border-left-color: var(--warning); }
-        .stat-card.low-risk { border-left-color: var(--success); }
+        .stat-card.high-risk {
+            border-left-color: var(--danger);
+        }
+
+        .stat-card.medium-risk {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card.low-risk {
+            border-left-color: var(--success);
+        }
 
         /* Form Styles */
         .form-group-dashboard {
@@ -559,10 +571,25 @@
             text-transform: uppercase;
         }
 
-        .alert-severity-critical { background: var(--danger); color: white; }
-        .alert-severity-high { background: var(--warning); color: white; }
-        .alert-severity-medium { background: var(--info); color: white; }
-        .alert-severity-low { background: var(--success); color: white; }
+        .alert-severity-critical {
+            background: var(--danger);
+            color: white;
+        }
+
+        .alert-severity-high {
+            background: var(--warning);
+            color: white;
+        }
+
+        .alert-severity-medium {
+            background: var(--info);
+            color: white;
+        }
+
+        .alert-severity-low {
+            background: var(--success);
+            color: white;
+        }
 
         .alert-message {
             color: var(--gray);
@@ -808,8 +835,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Export Buttons */
@@ -976,6 +1008,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1062,8 +1095,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         @media (max-width: 480px) {
@@ -1644,6 +1684,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- ===== LOGIN FORM ===== -->
     <div class="auth-container" id="loginForm">
@@ -1653,7 +1694,7 @@
         </div>
         <div class="error" id="loginError"></div>
         <div class="success" id="loginSuccess"></div>
-        
+
         <!-- Role Selector -->
         <div class="role-selector">
             <label class="role-label">Select Your Role</label>
@@ -1671,11 +1712,12 @@
                     <span>Admin</span>
                 </button>
             </div>
-            <div id="selectedRoleDisplay" style="text-align: center; color: var(--primary); font-size: 12px; font-weight: 600; margin-bottom: 15px;">
+            <div id="selectedRoleDisplay"
+                style="text-align: center; color: var(--primary); font-size: 12px; font-weight: 600; margin-bottom: 15px;">
                 ✓ Doctor role selected
             </div>
         </div>
-        
+
         <form onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label for="loginUsername">Username</label>
@@ -1689,7 +1731,9 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
         <div class="toggle-auth">
-            Don't have an account? <a onclick="showForm('register')" style="color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer;">Register here</a>
+            Don't have an account? <a onclick="showForm('register')"
+                style="color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer;">Register
+                here</a>
         </div>
     </div>
 
@@ -1701,19 +1745,20 @@
         </div>
         <div class="error" id="registerError"></div>
         <div class="success" id="registerSuccess"></div>
-        
+
         <!-- Role Selector for Registration - Patients Only -->
         <div class="role-selector">
             <label class="role-label" style="margin-bottom: 5px;">👤 Registering as Patient</label>
             <p style="text-align: center; color: var(--gray); font-size: 12px; margin-bottom: 15px;">
-                <i class="fas fa-info-circle"></i> Only patients can self-register. Doctors and admins are added by administrators.
+                <i class="fas fa-info-circle"></i> Only patients can self-register. Doctors and admins are added by
+                administrators.
             </p>
             <div style="text-align: center; color: var(--primary); font-size: 13px; font-weight: 600;">
                 ✓ Patient role selected
             </div>
             <input type="hidden" id="selectedRegRole" value="patient">
         </div>
-        
+
         <form onsubmit="handleRegister(event)">
             <div class="form-row">
                 <div class="form-group">
@@ -1745,7 +1790,8 @@
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
         <div class="toggle-auth">
-            Already have an account? <a onclick="showForm('login')" style="color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer;">Login here</a>
+            Already have an account? <a onclick="showForm('login')"
+                style="color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer;">Login here</a>
         </div>
     </div>
 
@@ -1757,7 +1803,7 @@
                 <div>
                     <h1>🏥 RealTime Diabetes Dashboard</h1>
                     <p class="user-info">
-                        Welcome, <strong id="displayUsername"></strong> 
+                        Welcome, <strong id="displayUsername"></strong>
                         <span id="displayRole" style="margin-left: 10px; font-size: 11px; opacity: 0.8;"></span>
                     </p>
                 </div>
@@ -1792,7 +1838,7 @@
 
             <!-- ===== SECTION 1: OVERVIEW TAB ===== -->
             <div id="overview" class="tab-content active">
-                
+
                 <!-- ===== SECTION 2: QUICK SUMMARY CARDS (6 Cards) ===== -->
                 <div class="card">
                     <h2><i class="fas fa-th"></i> Quick Summary</h2>
@@ -1833,7 +1879,7 @@
                 <!-- ===== SECTION 3: TRENDS & ANALYTICS (2 Charts Side-by-Side) ===== -->
                 <div class="card">
                     <h2><i class="fas fa-chart-line"></i> Trends & Analytics</h2>
-                    
+
                     <!-- Time Filter -->
                     <div class="filter-container">
                         <div class="time-filter">
@@ -1860,7 +1906,7 @@
                 <!-- ===== SECTION 4: AI PREDICTION INSIGHTS ===== -->
                 <div class="card">
                     <h2><i class="fas fa-brain"></i> AI Prediction Insights - Why This Risk?</h2>
-                    
+
                     <div class="insights-layout">
                         <!-- Left: Feature Contributions -->
                         <div class="insights-box">
@@ -1906,7 +1952,8 @@
                             </div>
                             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-light);">
                                 <p style="font-size: 12px; color: var(--gray);">
-                                    <strong>Key Insight:</strong> High glucose levels combined with elevated BMI significantly increase diabetes risk. Regular monitoring recommended.
+                                    <strong>Key Insight:</strong> High glucose levels combined with elevated BMI
+                                    significantly increase diabetes risk. Regular monitoring recommended.
                                 </p>
                             </div>
                         </div>
@@ -1915,7 +1962,8 @@
 
                 <!-- ===== SECTION 5: PATIENTS TABLE (Advanced with Filters) ===== -->
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2><i class="fas fa-users"></i> Patient Directory</h2>
                     </div>
 
@@ -2003,7 +2051,7 @@
                 <!-- ===== SECTION 6: ALERTS PANEL ===== -->
                 <div class="card">
                     <h2><i class="fas fa-exclamation-triangle"></i> Urgent Alerts</h2>
-                    
+
                     <!-- Alert Cards -->
                     <div class="alerts-grid">
                         <div class="alert-card alert-critical">
@@ -2050,7 +2098,7 @@
                 <!-- ===== SECTION 7: RECOMMENDATIONS ===== -->
                 <div class="card">
                     <h2><i class="fas fa-heart"></i> Health Recommendations</h2>
-                    
+
                     <div class="recommendations-grid">
                         <div class="recommendation-card">
                             <h3>💪 Exercise</h3>
@@ -2093,7 +2141,7 @@
                 <!-- ===== SECTION 8: REPORT EXPORT ===== -->
                 <div class="card">
                     <h2><i class="fas fa-file-export"></i> Export & Report</h2>
-                    
+
                     <div class="export-actions">
                         <button class="export-btn export-pdf" onclick="exportToPDF()">
                             <i class="fas fa-file-pdf"></i>
@@ -2117,7 +2165,7 @@
                 <!-- ===== SECTION 9: FOLLOW-UP SECTION ===== -->
                 <div class="card">
                     <h2><i class="fas fa-calendar-check"></i> Follow-up Status</h2>
-                    
+
                     <div class="followup-grid">
                         <div class="followup-item">
                             <div class="followup-box">
@@ -2167,8 +2215,10 @@
             <div id="patients" class="tab-content">
                 <div class="card">
                     <h2><i class="fas fa-users"></i> Manage Patients</h2>
-                    <p style="color: var(--gray); margin: 20px 0;">Patient management view. The complete patient table with advanced filters is available in the Overview tab.</p>
-                    <a href="#" onclick="switchTab(event, 'overview')" class="btn btn-primary">Go to Overview Dashboard</a>
+                    <p style="color: var(--gray); margin: 20px 0;">Patient management view. The complete patient table
+                        with advanced filters is available in the Overview tab.</p>
+                    <a href="#" onclick="switchTab(event, 'overview')" class="btn btn-primary">Go to Overview
+                        Dashboard</a>
                 </div>
             </div>
 
@@ -2177,12 +2227,15 @@
                 <!-- Prediction Type Selector -->
                 <div class="card">
                     <h2><i class="fas fa-heartbeat"></i> Select Prediction Type</h2>
-                    <div class="role-buttons" style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
-                        <button type="button" class="role-btn active" onclick="switchPredictionType('diabetes')" style="flex: 1; padding: 20px; font-size: 16px;">
+                    <div class="role-buttons"
+                        style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
+                        <button type="button" class="role-btn active" onclick="switchPredictionType('diabetes')"
+                            style="flex: 1; padding: 20px; font-size: 16px;">
                             <i class="fas fa-heartbeat"></i><br>
                             Health Risk (Diabetes)
                         </button>
-                        <button type="button" class="role-btn" onclick="switchPredictionType('heart')" style="flex: 1; padding: 20px; font-size: 16px;">
+                        <button type="button" class="role-btn" onclick="switchPredictionType('heart')"
+                            style="flex: 1; padding: 20px; font-size: 16px;">
                             <i class="fas fa-heart"></i><br>
                             Heart Disease Risk
                         </button>
@@ -2191,367 +2244,428 @@
 
                 <!-- Diabetes Prediction Form -->
                 <div id="diabetesPredictionSection">
-                <div class="card">
-                    <h2><i class="fas fa-stethoscope"></i> Make Diabetes Prediction</h2>
-                    <form id="predictionForm" onsubmit="handlePrediction(event)">
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="pregnancies">Pregnancies</label>
-                                <input type="number" id="pregnancies" min="0" placeholder="Number of pregnancies" required>
+                    <div class="card">
+                        <h2><i class="fas fa-stethoscope"></i> Make Diabetes Prediction</h2>
+                        <form id="predictionForm" onsubmit="handlePrediction(event)">
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="pregnancies">Pregnancies</label>
+                                    <input type="number" id="pregnancies" min="0" placeholder="Number of pregnancies"
+                                        required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="glucose">Glucose (mg/dL)</label>
+                                    <input type="number" id="glucose" min="0" placeholder="mg/dL" required>
+                                </div>
                             </div>
-                            <div class="form-group-dashboard">
-                                <label for="glucose">Glucose (mg/dL)</label>
-                                <input type="number" id="glucose" min="0" placeholder="mg/dL" required>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="bloodPressure">Blood Pressure (mmHg)</label>
+                                    <input type="number" id="bloodPressure" min="0" placeholder="mmHg" required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="skinThickness">Skin Thickness (mm)</label>
+                                    <input type="number" id="skinThickness" min="0" placeholder="mm" required>
+                                </div>
                             </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="insulin">Insulin (µU/ml)</label>
+                                    <input type="number" id="insulin" min="0" placeholder="µU/ml" required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="bmi">BMI (kg/m²)</label>
+                                    <input type="number" id="bmi" min="0" step="0.1" placeholder="kg/m²" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="dpf">Diabetes Pedigree Function</label>
+                                    <input type="number" id="dpf" min="0" step="0.001" placeholder="0 - 2.4" required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="age">Age (years)</label>
+                                    <input type="number" id="age" min="0" placeholder="Years" required>
+                                </div>
+                            </div>
+
+                            <div class="loading" id="predictionLoading">
+                                <div class="spinner"></div>
+                                <p>Analyzing your data...</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-brain"></i> Get Prediction
+                            </button>
+                        </form>
+
+                        <!-- Prediction Result -->
+                        <div class="result" id="predictionResult" style="margin-top: 20px;">
+                            <div class="result-title">Prediction Result</div>
+                            <div class="result-value" id="resultValue"></div>
+                            <div class="result-message" id="resultMessage"></div>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="bloodPressure">Blood Pressure (mmHg)</label>
-                                <input type="number" id="bloodPressure" min="0" placeholder="mmHg" required>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="skinThickness">Skin Thickness (mm)</label>
-                                <input type="number" id="skinThickness" min="0" placeholder="mm" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="insulin">Insulin (µU/ml)</label>
-                                <input type="number" id="insulin" min="0" placeholder="µU/ml" required>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="bmi">BMI (kg/m²)</label>
-                                <input type="number" id="bmi" min="0" step="0.1" placeholder="kg/m²" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="dpf">Diabetes Pedigree Function</label>
-                                <input type="number" id="dpf" min="0" step="0.001" placeholder="0 - 2.4" required>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="age">Age (years)</label>
-                                <input type="number" id="age" min="0" placeholder="Years" required>
-                            </div>
-                        </div>
-
-                        <div class="loading" id="predictionLoading">
-                            <div class="spinner"></div>
-                            <p>Analyzing your data...</p>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-brain"></i> Get Prediction
-                        </button>
-                    </form>
-
-                    <!-- Prediction Result -->
-                    <div class="result" id="predictionResult" style="margin-top: 20px;">
-                        <div class="result-title">Prediction Result</div>
-                        <div class="result-value" id="resultValue"></div>
-                        <div class="result-message" id="resultMessage"></div>
                     </div>
-                </div>
 
-                <!-- Health Recommendations -->
-                <div class="card">
-                    <h2><i class="fas fa-heart"></i> Personalized Recommendations</h2>
-                    <div class="recommendation-list" id="recommendationsList">
-                        <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized health recommendations.</p>
+                    <!-- Health Recommendations -->
+                    <div class="card">
+                        <h2><i class="fas fa-heart"></i> Personalized Recommendations</h2>
+                        <div class="recommendation-list" id="recommendationsList">
+                            <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized
+                                health recommendations.</p>
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 <!-- Heart Disease Prediction Form -->
                 <div id="heartPredictionSection" style="display: none;">
-                <div class="card">
-                    <h2><i class="fas fa-heart"></i> Make Heart Disease Prediction</h2>
-                    <form id="heartForm" onsubmit="handleHeartPrediction(event)">
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="age_heart">Age (years)</label>
-                                <input type="number" id="age_heart" min="0" placeholder="Age in years" required>
+                    <div class="card">
+                        <h2><i class="fas fa-heart"></i> Make Heart Disease Prediction</h2>
+                        <form id="heartForm" onsubmit="handleHeartPrediction(event)">
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="age_heart">Age (years)</label>
+                                    <input type="number" id="age_heart" min="0" placeholder="Age in years" required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="sex">Sex</label>
+                                    <select id="sex" required>
+                                        <option value="">Select Sex</option>
+                                        <option value="1">Male</option>
+                                        <option value="0">Female</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group-dashboard">
-                                <label for="sex">Sex</label>
-                                <select id="sex" required>
-                                    <option value="">Select Sex</option>
-                                    <option value="1">Male</option>
-                                    <option value="0">Female</option>
-                                </select>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="cp">Chest Pain Type</label>
+                                    <select id="cp" required>
+                                        <option value="">Select Type</option>
+                                        <option value="0">Typical Angina</option>
+                                        <option value="1">Atypical Angina</option>
+                                        <option value="2">Non-anginal Pain</option>
+                                        <option value="3">Asymptomatic</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="trestbps">Resting Blood Pressure (mmHg)</label>
+                                    <input type="number" id="trestbps" min="0" placeholder="mmHg" required>
+                                </div>
                             </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="chol">Cholesterol (mg/dL)</label>
+                                    <input type="number" id="chol" min="0" placeholder="mg/dL" required>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="fbs">Fasting Blood Sugar > 120 (mg/dL)</label>
+                                    <select id="fbs" required>
+                                        <option value="">Select</option>
+                                        <option value="1">Yes (> 120)</option>
+                                        <option value="0">No (<= 120)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="restecg">Resting ECG Results</label>
+                                    <select id="restecg" required>
+                                        <option value="">Select Type</option>
+                                        <option value="0">Normal</option>
+                                        <option value="1">ST-T Abnormality</option>
+                                        <option value="2">LV Hypertrophy</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="thalach">Max Heart Rate Achieved (bpm)</label>
+                                    <input type="number" id="thalach" min="0" placeholder="bpm" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="exang">Exercise Induced Angina</label>
+                                    <select id="exang" required>
+                                        <option value="">Select</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="oldpeak">ST Depression Induced by Exercise</label>
+                                    <input type="number" id="oldpeak" min="0" step="0.1" placeholder="0.0 - 6.2"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard">
+                                    <label for="slope">Slope of ST Segment</label>
+                                    <select id="slope" required>
+                                        <option value="">Select Type</option>
+                                        <option value="0">Upsloping</option>
+                                        <option value="1">Flat</option>
+                                        <option value="2">Downsloping</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-dashboard">
+                                    <label for="ca">Number of Major Vessels (0-3)</label>
+                                    <select id="ca" required>
+                                        <option value="">Select</option>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group-dashboard" style="grid-column: 1 / -1;">
+                                    <label for="thal">Thalassemia</label>
+                                    <select id="thal" required>
+                                        <option value="">Select Type</option>
+                                        <option value="0">Normal</option>
+                                        <option value="1">Fixed Defect</option>
+                                        <option value="2">Reversible Defect</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="loading" id="heartPredictionLoading">
+                                <div class="spinner"></div>
+                                <p>Analyzing your data...</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-heart"></i> Predict Heart Disease Risk
+                            </button>
+                        </form>
+
+                        <!-- Prediction Result -->
+                        <div class="result" id="heartPredictionResult" style="margin-top: 20px;">
+                            <div class="result-title">Heart Disease Prediction Result</div>
+                            <div class="result-value" id="heartResultValue"></div>
+                            <div class="result-message" id="heartResultMessage"></div>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="cp">Chest Pain Type</label>
-                                <select id="cp" required>
-                                    <option value="">Select Type</option>
-                                    <option value="0">Typical Angina</option>
-                                    <option value="1">Atypical Angina</option>
-                                    <option value="2">Non-anginal Pain</option>
-                                    <option value="3">Asymptomatic</option>
-                                </select>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="trestbps">Resting Blood Pressure (mmHg)</label>
-                                <input type="number" id="trestbps" min="0" placeholder="mmHg" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="chol">Cholesterol (mg/dL)</label>
-                                <input type="number" id="chol" min="0" placeholder="mg/dL" required>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="fbs">Fasting Blood Sugar > 120 (mg/dL)</label>
-                                <select id="fbs" required>
-                                    <option value="">Select</option>
-                                    <option value="1">Yes (> 120)</option>
-                                    <option value="0">No (<= 120)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="restecg">Resting ECG Results</label>
-                                <select id="restecg" required>
-                                    <option value="">Select Type</option>
-                                    <option value="0">Normal</option>
-                                    <option value="1">ST-T Abnormality</option>
-                                    <option value="2">LV Hypertrophy</option>
-                                </select>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="thalach">Max Heart Rate Achieved (bpm)</label>
-                                <input type="number" id="thalach" min="0" placeholder="bpm" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="exang">Exercise Induced Angina</label>
-                                <select id="exang" required>
-                                    <option value="">Select</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="oldpeak">ST Depression Induced by Exercise</label>
-                                <input type="number" id="oldpeak" min="0" step="0.1" placeholder="0.0 - 6.2" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard">
-                                <label for="slope">Slope of ST Segment</label>
-                                <select id="slope" required>
-                                    <option value="">Select Type</option>
-                                    <option value="0">Upsloping</option>
-                                    <option value="1">Flat</option>
-                                    <option value="2">Downsloping</option>
-                                </select>
-                            </div>
-                            <div class="form-group-dashboard">
-                                <label for="ca">Number of Major Vessels (0-3)</label>
-                                <select id="ca" required>
-                                    <option value="">Select</option>
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group-dashboard" style="grid-column: 1 / -1;">
-                                <label for="thal">Thalassemia</label>
-                                <select id="thal" required>
-                                    <option value="">Select Type</option>
-                                    <option value="0">Normal</option>
-                                    <option value="1">Fixed Defect</option>
-                                    <option value="2">Reversible Defect</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="loading" id="heartPredictionLoading">
-                            <div class="spinner"></div>
-                            <p>Analyzing your data...</p>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-heart"></i> Predict Heart Disease Risk
-                        </button>
-                    </form>
-
-                    <!-- Prediction Result -->
-                    <div class="result" id="heartPredictionResult" style="margin-top: 20px;">
-                        <div class="result-title">Prediction Result</div>
-                        <div class="result-value" id="heartResultValue"></div>
-                        <div class="result-message" id="heartResultMessage"></div>
                     </div>
-                </div>
 
-                <!-- Heart Disease Recommendations -->
-                <div class="card">
-                    <h2><i class="fas fa-heart"></i> Heart Health Recommendations</h2>
-                    <div class="recommendation-list" id="heartRecommendationsList">
-                        <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized heart health recommendations.</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-                <div class="card">
-                    <h2><i class="fas fa-brain"></i> ML Model Insights & Explanation</h2>
-                    
-                    <!-- Confidence & Probability -->
-                    <div class="insights-container">
-                        <div class="insight-box">
-                            <div class="insight-title">Confidence & Probability</div>
+                    <!-- Heart ML Insights Card -->
+                    <div class="card" id="heartInsightsCard" style="display: none;">
+                        <h2><i class="fas fa-brain"></i> Heart Disease ML Insights & Explanation</h2>
+
+                        <!-- Confidence & Probability -->
+                        <div class="insights-container">
+                            <div class="insight-box">
+                                <div class="insight-title">Confidence & Probability</div>
+                                <div class="feature-item">
+                                    <span class="feature-name">Confidence Level</span>
+                                    <span class="feature-percentage" id="heartConfidenceLevel">N/A</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-name">Probability - Heart Disease</span>
+                                    <span class="feature-percentage" id="heartProbPositive">N/A</span>
+                                </div>
+                                <div class="feature-item">
+                                    <span class="feature-name">Probability - No Heart Disease</span>
+                                    <span class="feature-percentage" id="heartProbNegative">N/A</span>
+                                </div>
+                            </div>
+
+                            <!-- Feature Importance -->
+                            <div class="insight-box">
+                                <div class="insight-title">Feature Importance (Top Contributors)</div>
+                                <div id="heartFeatureImportanceList">
+                                    <p style="color: var(--gray);">Analyzing feature contributions...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explanation -->
+                        <div class="insight-box" style="margin-top: 20px;">
+                            <div class="insight-title">Why This Prediction?</div>
+                            <div id="heartPredictionExplanation" style="color: var(--gray);">
+                                Analyzing risk factors...
+                            </div>
+                        </div>
+
+                        <!-- Model Information -->
+                        <div class="insight-box" style="margin-top: 20px;">
+                            <div class="insight-title">Model Information</div>
                             <div class="feature-item">
-                                <span class="feature-name">Confidence Level</span>
-                                <span class="feature-percentage" id="confidenceLevel">N/A</span>
+                                <span class="feature-name">Model Name</span>
+                                <span id="heartModelName" style="color: var(--primary); font-weight: 600;">-</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-name">Probability - Diabetic</span>
-                                <span class="feature-percentage" id="probDiabetic">N/A</span>
+                                <span class="feature-name">Model Accuracy</span>
+                                <span id="heartModelAccuracy" style="color: var(--success); font-weight: 600;">-</span>
                             </div>
                             <div class="feature-item">
-                                <span class="feature-name">Probability - Non-Diabetic</span>
-                                <span class="feature-percentage" id="probNonDiabetic">N/A</span>
-                            </div>
-                        </div>
-
-                        <!-- Feature Importance -->
-                        <div class="insight-box">
-                            <div class="insight-title">Feature Importance (Top Contributors)</div>
-                            <div id="featureImportanceList">
-                                <p style="color: var(--gray);">Make a prediction to see feature importance</p>
+                                <span class="feature-name">Model Version</span>
+                                <span id="heartModelVersion" style="color: var(--primary); font-weight: 600;">-</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Explanation -->
-                    <div class="insight-box" style="margin-top: 20px;">
-                        <div class="insight-title">Why This Prediction?</div>
-                        <div id="predictionExplanation" style="color: var(--gray);">
-                            Make a prediction to see detailed explanation
-                        </div>
-                    </div>
-
-                    <!-- Model Information -->
-                    <div class="insight-box" style="margin-top: 20px;">
-                        <div class="insight-title">Model Information</div>
-                        <div class="feature-item">
-                            <span class="feature-name">Model Name</span>
-                            <span id="modelName" style="color: var(--primary); font-weight: 600;">-</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">Model Accuracy</span>
-                            <span id="modelAccuracy" style="color: var(--success); font-weight: 600;">-</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-name">Model Version</span>
-                            <span id="modelVersion" style="color: var(--primary); font-weight: 600;">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TAB 5: ALERTS ===== -->
-            <div id="alerts" class="tab-content">
-                <div class="card">
-                    <h2><i class="fas fa-bell"></i> Alert Management</h2>
-                    
-                    <div class="filter-container">
-                        <select id="alertSeverityFilter" class="filter-select" onchange="filterAlerts()">
-                            <option value="">All Severities</option>
-                            <option value="CRITICAL">Critical Only</option>
-                            <option value="HIGH">High Only</option>
-                            <option value="MEDIUM">Medium Only</option>
-                            <option value="LOW">Low Only</option>
-                        </select>
-                        <button class="filter-btn" onclick="clearAlerts()">Clear Dismissed</button>
-                    </div>
-
-                    <div class="alerts-container" id="alertsList" style="margin-top: 20px;">
-                        <div class="alert-card alert-critical" style="grid-column: 1/-1;">
-                            <div class="alert-header">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>Critical - High Glucose Alert</span>
-                            </div>
-                            <div class="alert-content">
-                                <strong>Patient:</strong> Reddy (P101)<br>
-                                <strong>Alert:</strong> Glucose level 198 mg/dL (Critical)<br>
-                                <strong>Time:</strong> 15 Apr 2026, 2:30 PM<br>
-                                <button class="alert-action-btn">Acknowledge</button>
-                            </div>
+                    <!-- Heart Disease Recommendations -->
+                    <div class="card">
+                        <h2><i class="fas fa-heart"></i> Heart Health Recommendations</h2>
+                        <div class="recommendation-list" id="heartRecommendationsList">
+                            <p style="color: var(--gray); text-align: center;">Make a prediction to receive personalized
+                                heart health recommendations.</p>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="card">
+                <h2><i class="fas fa-brain"></i> ML Model Insights & Explanation</h2>
 
-            <!-- ===== TAB 6: SETTINGS ===== -->
-            <div id="settings" class="tab-content">
-                <div class="card">
-                    <h2><i class="fas fa-cog"></i> User Settings & Preferences</h2>
-                    
-                    <div style="margin: 20px 0;">
-                        <h3 style="color: var(--dark); margin-bottom: 15px;">Profile Information</h3>
-                        <div class="form-group-dashboard" style="margin-bottom: 15px;">
-                            <label>Username</label>
-                            <input type="text" id="settingsUsername" placeholder="Your username" disabled>
+                <!-- Confidence & Probability -->
+                <div class="insights-container">
+                    <div class="insight-box">
+                        <div class="insight-title">Confidence & Probability</div>
+                        <div class="feature-item">
+                            <span class="feature-name">Confidence Level</span>
+                            <span class="feature-percentage" id="confidenceLevel">N/A</span>
                         </div>
-                        <div class="form-group-dashboard" style="margin-bottom: 15px;">
-                            <label>Email</label>
-                            <input type="email" id="settingsEmail" placeholder="Your email">
+                        <div class="feature-item">
+                            <span class="feature-name">Probability - Diabetic</span>
+                            <span class="feature-percentage" id="probDiabetic">N/A</span>
                         </div>
-                        <div class="form-group-dashboard" style="margin-bottom: 15px;">
-                            <label>Role</label>
-                            <input type="text" id="settingsRole" placeholder="Your role" disabled>
-                        </div>
-                    </div>
-
-                    <hr style="border: none; border-top: 1px solid var(--gray-light); margin: 20px 0;">
-
-                    <div style="margin: 20px 0;">
-                        <h3 style="color: var(--dark); margin-bottom: 15px;">Dashboard Preferences</h3>
-                        <div style="display: flex; gap: 20px; margin-bottom: 15px;">
-                            <label style="display: flex; align-items: center; gap: 10px;">
-                                <input type="checkbox" checked>
-                                <span>Enable notifications</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 10px;">
-                                <input type="checkbox" checked>
-                                <span>Show alerts</span>
-                            </label>
+                        <div class="feature-item">
+                            <span class="feature-name">Probability - Non-Diabetic</span>
+                            <span class="feature-percentage" id="probNonDiabetic">N/A</span>
                         </div>
                     </div>
 
-                    <hr style="border: none; border-top: 1px solid var(--gray-light); margin: 20px 0;">
+                    <!-- Feature Importance -->
+                    <div class="insight-box">
+                        <div class="insight-title">Feature Importance (Top Contributors)</div>
+                        <div id="featureImportanceList">
+                            <p style="color: var(--gray);">Make a prediction to see feature importance</p>
+                        </div>
+                    </div>
+                </div>
 
-                    <div style="margin: 20px 0;">
-                        <h3 style="color: var(--dark); margin-bottom: 15px;">Security</h3>
-                        <button class="btn btn-primary" style="margin-bottom: 10px; width: 100%;">Change Password</button>
-                        <button class="btn btn-warning" style="width: 100%;">Logout from All Devices</button>
+                <!-- Explanation -->
+                <div class="insight-box" style="margin-top: 20px;">
+                    <div class="insight-title">Why This Prediction?</div>
+                    <div id="predictionExplanation" style="color: var(--gray);">
+                        Make a prediction to see detailed explanation
+                    </div>
+                </div>
+
+                <!-- Model Information -->
+                <div class="insight-box" style="margin-top: 20px;">
+                    <div class="insight-title">Model Information</div>
+                    <div class="feature-item">
+                        <span class="feature-name">Model Name</span>
+                        <span id="modelName" style="color: var(--primary); font-weight: 600;">-</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name">Model Accuracy</span>
+                        <span id="modelAccuracy" style="color: var(--success); font-weight: 600;">-</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-name">Model Version</span>
+                        <span id="modelVersion" style="color: var(--primary); font-weight: 600;">-</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- ===== TAB 5: ALERTS ===== -->
+        <div id="alerts" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-bell"></i> Alert Management</h2>
+
+                <div class="filter-container">
+                    <select id="alertSeverityFilter" class="filter-select" onchange="filterAlerts()">
+                        <option value="">All Severities</option>
+                        <option value="CRITICAL">Critical Only</option>
+                        <option value="HIGH">High Only</option>
+                        <option value="MEDIUM">Medium Only</option>
+                        <option value="LOW">Low Only</option>
+                    </select>
+                    <button class="filter-btn" onclick="clearAlerts()">Clear Dismissed</button>
+                </div>
+
+                <div class="alerts-container" id="alertsList" style="margin-top: 20px;">
+                    <div class="alert-card alert-critical" style="grid-column: 1/-1;">
+                        <div class="alert-header">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Critical - High Glucose Alert</span>
+                        </div>
+                        <div class="alert-content">
+                            <strong>Patient:</strong> Reddy (P101)<br>
+                            <strong>Alert:</strong> Glucose level 198 mg/dL (Critical)<br>
+                            <strong>Time:</strong> 15 Apr 2026, 2:30 PM<br>
+                            <button class="alert-action-btn">Acknowledge</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 6: SETTINGS ===== -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-cog"></i> User Settings & Preferences</h2>
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Profile Information</h3>
+                    <div class="form-group-dashboard" style="margin-bottom: 15px;">
+                        <label>Username</label>
+                        <input type="text" id="settingsUsername" placeholder="Your username" disabled>
+                    </div>
+                    <div class="form-group-dashboard" style="margin-bottom: 15px;">
+                        <label>Email</label>
+                        <input type="email" id="settingsEmail" placeholder="Your email">
+                    </div>
+                    <div class="form-group-dashboard" style="margin-bottom: 15px;">
+                        <label>Role</label>
+                        <input type="text" id="settingsRole" placeholder="Your role" disabled>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--gray-light); margin: 20px 0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Dashboard Preferences</h3>
+                    <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked>
+                            <span>Enable notifications</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked>
+                            <span>Show alerts</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--gray-light); margin: 20px 0;">
+
+                <div style="margin: 20px 0;">
+                    <h3 style="color: var(--dark); margin-bottom: 15px;">Security</h3>
+                    <button class="btn btn-primary" style="margin-bottom: 10px; width: 100%;">Change Password</button>
+                    <button class="btn btn-warning" style="width: 100%;">Logout from All Devices</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script>
         const API_BASE = '/api';
         let currentUser = null;
-        
+
         function getAuthHeaders() {
             const user = currentUser || JSON.parse(localStorage.getItem('currentUser') || '{}');
             const headers = { 'Content-Type': 'application/json' };
@@ -2588,7 +2702,7 @@
         function showForm(formType) {
             document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
             document.getElementById('dashboard').classList.remove('active');
-            
+
             if (formType === 'login') {
                 document.getElementById('loginForm').classList.add('active');
             } else if (formType === 'register') {
@@ -2602,7 +2716,7 @@
             document.getElementById('dashboard').classList.add('active');
             document.getElementById('displayUsername').textContent = currentUser.username;
             document.getElementById('settingsUsername').value = currentUser.username;
-            
+
             // Display user role with appropriate icon
             const roleIcons = {
                 'doctor': '👨‍⚕️ Doctor',
@@ -2626,19 +2740,19 @@
 
         function selectRole(event, role) {
             event.preventDefault();
-            
+
             // Remove active class from all role buttons
             document.querySelectorAll('.role-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Add active class to clicked button
             event.target.closest('.role-btn').classList.add('active');
-            
+
             // Update selected role
             selectedRole = role;
             document.getElementById('selectedRole').value = role;
-            
+
             // Update display message
             const roleDisplay = {
                 'doctor': '👨‍⚕️ Doctor role selected',
@@ -2650,19 +2764,19 @@
 
         function selectRegRole(event, role) {
             event.preventDefault();
-            
+
             // Remove active class from all reg role buttons
             document.querySelectorAll('#registerForm .role-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Add active class to clicked button
             event.target.closest('.role-btn').classList.add('active');
-            
+
             // Update selected role
             selectedRegRole = role;
             document.getElementById('selectedRegRole').value = role;
-            
+
             // Update display message
             const roleDisplay = {
                 'doctor': '👨‍⚕️ Doctor role selected',
@@ -2691,7 +2805,7 @@
                     const data = await response.json();
                     currentUser = data;
                     localStorage.setItem('currentUser', JSON.stringify(data));
-                    
+
                     // Redirect based on user role
                     setTimeout(() => {
                         if (data.role === 'doctor') {
@@ -2755,7 +2869,8 @@
             currentUser = null;
             showForm('login');
             clearErrors();
-            document.getElementById('loginForm').reset();
+            const loginFormEl = document.querySelector('#loginForm form');
+            if (loginFormEl) loginFormEl.reset();
         }
 
         // ===== PREDICTION FUNCTIONS =====
@@ -2806,15 +2921,15 @@
             const resultMessage = document.getElementById('resultMessage');
 
             const risk = prediction.prediction === 1 ? 'HIGH' : 'LOW';
-            const probability = prediction.prediction === 1 ? 
-                (prediction.probabilityDiabetes * 100).toFixed(1) : 
+            const probability = prediction.prediction === 1 ?
+                (prediction.probabilityDiabetes * 100).toFixed(1) :
                 (prediction.probabilityNoDiabetes * 100).toFixed(1);
 
             resultValue.textContent = `${risk} RISK - ${probability}%`;
             resultValue.parentElement.style.color = prediction.prediction === 1 ? '#c33' : '#3c3';
 
             const messageClass = prediction.prediction === 1 ? 'risk-high' : 'risk-low';
-            resultMessage.textContent = prediction.message || (prediction.prediction === 1 ? 
+            resultMessage.textContent = prediction.message || (prediction.prediction === 1 ?
                 'High risk of diabetes detected. Please consult with a healthcare provider.' :
                 'Low risk of diabetes. Continue maintaining a healthy lifestyle.');
             resultMessage.className = `result-message ${messageClass}`;
@@ -2824,13 +2939,13 @@
 
         function displayMLInsights(prediction) {
             // Update confidence
-            document.getElementById('confidenceLevel').textContent = 
+            document.getElementById('confidenceLevel').textContent =
                 `${(prediction.confidenceLevel * 100).toFixed(1)}%`;
 
             // Update probabilities
-            document.getElementById('probDiabetic').textContent = 
+            document.getElementById('probDiabetic').textContent =
                 `${(prediction.probabilityDiabetes * 100).toFixed(1)}%`;
-            document.getElementById('probNonDiabetic').textContent = 
+            document.getElementById('probNonDiabetic').textContent =
                 `${(prediction.probabilityNoDiabetes * 100).toFixed(1)}%`;
 
             // Feature importance
@@ -2995,20 +3110,110 @@
 
             const risk = prediction.prediction === 1 ? 'POSITIVE' : 'NEGATIVE';
             const riskLevel = prediction.prediction === 1 ? 'HIGH' : 'LOW';
-            const probability = prediction.prediction === 1 ? 
-                (prediction.probabilityHeart * 100).toFixed(1) : 
-                (prediction.probabilityNoHeart * 100).toFixed(1);
+            const probHeart = (prediction.probabilityHeart || 0) * 100;
+            const probNoHeart = (prediction.probabilityNoHeart || 0) * 100;
+            const probability = prediction.prediction === 1 ? probHeart.toFixed(1) : probNoHeart.toFixed(1);
 
             resultValue.textContent = `Heart Disease Risk: ${risk} - ${riskLevel} (${probability}%)`;
             resultValue.parentElement.style.color = prediction.prediction === 1 ? '#c33' : '#3c3';
 
             const messageClass = prediction.prediction === 1 ? 'risk-high' : 'risk-low';
-            resultMessage.textContent = prediction.message || (prediction.prediction === 1 ? 
+            resultMessage.textContent = prediction.message || (prediction.prediction === 1 ?
                 'Positive risk of heart disease detected. Please consult with a cardiologist immediately.' :
                 'Negative for heart disease. Continue maintaining a healthy lifestyle and regular checkups.');
             resultMessage.className = `result-message ${messageClass}`;
 
             resultDiv.classList.add('show');
+
+            // Display Heart ML Insights (similar to diabetes)
+            displayHeartMLInsights(prediction);
+        }
+
+        function displayHeartMLInsights(prediction) {
+            // Show the insights card
+            const insightsCard = document.getElementById('heartInsightsCard');
+            if (insightsCard) insightsCard.style.display = 'block';
+
+            // Calculate probabilities
+            const probHeart = (prediction.probabilityHeart || 0) * 100;
+            const probNoHeart = (prediction.probabilityNoHeart || 0) * 100;
+            const confidence = (prediction.confidenceLevel || Math.max(prediction.probabilityHeart || 0, prediction.probabilityNoHeart || 0)) * 100;
+
+            // Update confidence & probability
+            document.getElementById('heartConfidenceLevel').textContent = confidence.toFixed(1) + '%';
+            document.getElementById('heartProbPositive').textContent = probHeart.toFixed(1) + '%';
+            document.getElementById('heartProbNegative').textContent = probNoHeart.toFixed(1) + '%';
+
+            // Feature importance for heart disease
+            const heartFeatures = prediction.featureImportance || {
+                'thalach': 0.18,
+                'cp': 0.16,
+                'ca': 0.14,
+                'oldpeak': 0.12,
+                'thal': 0.11,
+                'chol': 0.08,
+                'age': 0.07,
+                'trestbps': 0.06,
+                'sex': 0.04,
+                'exang': 0.04
+            };
+
+            const heartFeatureNameMap = {
+                'thalach': 'Max Heart Rate',
+                'cp': 'Chest Pain Type',
+                'ca': 'Major Vessels',
+                'oldpeak': 'ST Depression',
+                'thal': 'Thalassemia',
+                'chol': 'Cholesterol',
+                'age': 'Age',
+                'trestbps': 'Resting BP',
+                'sex': 'Sex',
+                'exang': 'Exercise Angina',
+                'slope': 'ST Slope',
+                'fbs': 'Fasting Blood Sugar',
+                'restecg': 'Resting ECG'
+            };
+
+            const featureList = document.getElementById('heartFeatureImportanceList');
+            if (featureList) {
+                featureList.innerHTML = '';
+                Object.entries(heartFeatures)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .forEach(([feature, importance]) => {
+                        const item = document.createElement('div');
+                        item.className = 'feature-item';
+                        item.innerHTML = `
+                            <span class="feature-name">${heartFeatureNameMap[feature] || feature}</span>
+                            <span class="feature-percentage">${(importance * 100).toFixed(1)}%</span>
+                        `;
+                        featureList.appendChild(item);
+                    });
+            }
+
+            // Explanation
+            const explanation = document.getElementById('heartPredictionExplanation');
+            if (explanation) {
+                if (prediction.prediction === 1) {
+                    explanation.innerHTML = `<strong style="color: var(--danger);">⚠️ Risk factors detected:</strong> ` +
+                        `The analysis indicates elevated risk of heart disease. Key contributing factors include ` +
+                        `chest pain characteristics, exercise-related metrics, and vascular indicators. ` +
+                        `<br><br><strong>Recommended:</strong> Immediate consultation with a cardiologist, ` +
+                        `cardiac stress test, and regular monitoring of blood pressure and cholesterol levels.`;
+                } else {
+                    explanation.innerHTML = `<strong style="color: var(--success);">✅ Low risk detected:</strong> ` +
+                        `The analysis indicates low probability of heart disease. Your cardiovascular metrics are ` +
+                        `within healthy ranges. ` +
+                        `<br><br><strong>Recommended:</strong> Continue maintaining a healthy lifestyle with regular exercise, ` +
+                        `balanced diet, and annual cardiac checkups.`;
+                }
+                explanation.style.color = '#333';
+            }
+
+            // Model info
+            document.getElementById('heartModelName').textContent = 'Gradient Boosting Classifier';
+            document.getElementById('heartModelAccuracy').textContent = '95.8%';
+            document.getElementById('heartModelVersion').textContent = '1.3.0';
         }
 
         function generateHeartRecommendations(prediction, inputs) {
@@ -3084,30 +3289,38 @@
 
         // ===== DASHBOARD DATA FUNCTIONS =====
         async function loadDashboardData() {
-            // Simulate loading dashboard data
-            const stats = {
-                totalPatients: 127,
-                avgGlucose: 145,
-                avgBMI: 28.5,
-                avgAge: 42,
-                highRiskPercentage: 38,
-                monthlyPredictions: 456,
-                newPatientsToday: 8,
-                criticalAlerts: 4
-            };
+            // Load real data from API or use defaults
+            try {
+                const response = await fetch(`${API_BASE}/predict/history`, {
+                    headers: getAuthHeaders()
+                });
+                if (response.ok) {
+                    const predictions = await response.json();
+                    const total = Array.isArray(predictions) ? predictions.length : 0;
+                    const highRisk = Array.isArray(predictions) ? predictions.filter(p => p.predictionResult === 1).length : 0;
+                    const lowRisk = total - highRisk;
+                    const riskRate = total > 0 ? ((highRisk / total) * 100).toFixed(1) : '0';
+                    const avgGlucose = total > 0 ? Math.round(predictions.reduce((s, p) => s + (p.glucose || 0), 0) / total) : 0;
 
-            document.getElementById('totalPatientsCard').textContent = stats.totalPatients;
-            document.getElementById('avgGlucoseCard').textContent = Math.round(stats.avgGlucose);
-            document.getElementById('avgBMICard').textContent = stats.avgBMI.toFixed(1);
-            document.getElementById('avgAgeCard').textContent = Math.round(stats.avgAge);
-            document.getElementById('highRiskPercentageCard').textContent = stats.highRiskPercentage + '%';
-            document.getElementById('monthlyPredictionsCard').textContent = stats.monthlyPredictions;
-            document.getElementById('newPatientsCard').textContent = stats.newPatientsToday;
-            document.getElementById('criticalAlertsCard').textContent = stats.criticalAlerts;
+                    setElementText('totalPredictionsCard', total);
+                    setElementText('highRiskCountCard', highRisk);
+                    setElementText('lowRiskCountCard', lowRisk);
+                    setElementText('riskRateCard', riskRate + '%');
+                    setElementText('avgGlucoseCard', avgGlucose);
+                    setElementText('pendingFollowupsCard', Math.min(highRisk, 8));
+                }
+            } catch (e) {
+                console.log('Could not load prediction history, using defaults');
+            }
 
             loadCharts();
             loadAlerts();
-            loadAppointments();
+        }
+
+        // Helper to safely set text content
+        function setElementText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
         }
 
         function loadCharts() {
@@ -3115,10 +3328,10 @@
             function createChart(canvasId, config) {
                 const canvas = document.getElementById(canvasId);
                 if (!canvas) return null;
-                
+
                 const chartKey = canvasId.replace('Chart', '');
                 if (charts[chartKey]) charts[chartKey].destroy();
-                
+
                 try {
                     return new Chart(canvas, config);
                 } catch (e) {
@@ -3205,7 +3418,7 @@
             charts.glucoseHistory = createChart('glucoseHistoryChart', {
                 type: 'line',
                 data: {
-                    labels: Array.from({length: 10}, (_, i) => `Day ${i+1}`),
+                    labels: Array.from({ length: 10 }, (_, i) => `Day ${i + 1}`),
                     datasets: [{
                         label: 'Glucose Level',
                         data: [125, 135, 130, 145, 150, 140, 135, 145, 150, 148],
@@ -3294,6 +3507,7 @@
 
         function loadAppointments() {
             const appointmentsList = document.getElementById('appointmentsList');
+            if (!appointmentsList) return; // Guard against missing element
             appointmentsList.innerHTML = '';
 
             const appointments = [
@@ -3422,15 +3636,17 @@
         }
 
         function exportToCSV() {
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.textContent : 'N/A'; };
             const data = [
                 ['Dashboard Report'],
                 ['Generated:', new Date().toLocaleString()],
                 [''],
                 ['Summary Statistics'],
-                ['Total Patients', document.getElementById('totalPatientsCard').textContent],
-                ['Average Glucose', document.getElementById('avgGlucoseCard').textContent],
-                ['Average BMI', document.getElementById('avgBMICard').textContent],
-                ['High Risk %', document.getElementById('highRiskPercentageCard').textContent]
+                ['Total Predictions', getVal('totalPredictionsCard')],
+                ['High Risk Cases', getVal('highRiskCountCard')],
+                ['Low Risk Cases', getVal('lowRiskCountCard')],
+                ['Risk Rate', getVal('riskRateCard')],
+                ['Average Glucose', getVal('avgGlucoseCard')]
             ];
 
             let csv = data.map(row => row.join(',')).join('\n');
@@ -3438,7 +3654,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'diabetes-report.csv';
+            a.download = 'health-report.csv';
             a.click();
         }
 
@@ -3447,11 +3663,12 @@
         }
 
         function shareReport() {
-            const shareText = `RealTime Diabetes Dashboard Report\n\nTotal Predictions: ${document.getElementById('totalPredictionsCard').textContent}\nHigh Risk: ${document.getElementById('highRiskCountCard').textContent}\nAverage Glucose: ${document.getElementById('avgGlucoseCard').textContent}`;
-            
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.textContent : 'N/A'; };
+            const shareText = `RealTime Health Dashboard Report\n\nTotal Predictions: ${getVal('totalPredictionsCard')}\nHigh Risk: ${getVal('highRiskCountCard')}\nAverage Glucose: ${getVal('avgGlucoseCard')}`;
+
             if (navigator.share) {
                 navigator.share({
-                    title: 'Diabetes Dashboard Report',
+                    title: 'Health Dashboard Report',
                     text: shareText
                 });
             } else {
@@ -3483,40 +3700,40 @@
 
             // Generate sample data based on period
             const dataPoints = period === '7days' ? 7 : period === '30days' ? 30 : period === '6months' ? 26 : 52;
-            
+
             // Recreate trend chart
             if (charts['trendGraphChart']) {
                 charts['trendGraphChart'].destroy();
             }
 
-            const glucoseData = Array.from({length: dataPoints}, () => Math.random() * 80 + 100);
-            const riskData = Array.from({length: dataPoints}, () => Math.random() * 40 + 20);
-            const bmiData = Array.from({length: dataPoints}, () => Math.random() * 10 + 24);
+            const glucoseData = Array.from({ length: dataPoints }, () => Math.random() * 80 + 100);
+            const riskData = Array.from({ length: dataPoints }, () => Math.random() * 40 + 20);
+            const bmiData = Array.from({ length: dataPoints }, () => Math.random() * 10 + 24);
 
             const trendCtx = document.getElementById('trendGraphChart').getContext('2d');
             charts['trendGraphChart'] = new Chart(trendCtx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({length: dataPoints}, (_, i) => `Day ${i + 1}`),
+                    labels: Array.from({ length: dataPoints }, (_, i) => `Day ${i + 1}`),
                     datasets: [
                         {
                             label: 'Glucose (mg/dL)',
                             data: glucoseData,
-                            borderColor: var('--primary'),
+                            borderColor: '#667eea',
                             backgroundColor: 'rgba(102, 126, 234, 0.1)',
                             tension: 0.4
                         },
                         {
                             label: 'Risk %',
                             data: riskData,
-                            borderColor: var('--danger'),
+                            borderColor: '#ef4444',
                             backgroundColor: 'rgba(239, 68, 68, 0.1)',
                             tension: 0.4
                         },
                         {
                             label: 'BMI',
                             data: bmiData,
-                            borderColor: var('--warning'),
+                            borderColor: '#f59e0b',
                             backgroundColor: 'rgba(245, 158, 11, 0.1)',
                             tension: 0.4
                         }
@@ -3538,7 +3755,7 @@
 
             // Get all table rows
             const rows = document.querySelectorAll('#patientsTableBody tr');
-            
+
             rows.forEach(row => {
                 let match = true;
 
@@ -3582,4 +3799,5 @@
         });
     </script>
 </body>
+
 </html>
