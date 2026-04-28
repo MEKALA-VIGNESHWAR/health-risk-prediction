@@ -1208,12 +1208,41 @@
         const risk = (data.risk || (data.prediction === 1 ? 'HIGH' : 'LOW')).toUpperCase();
         const riskClass = risk === 'HIGH' || risk === 'CRITICAL' ? 'high' : risk === 'MEDIUM' ? 'medium' : 'low';
         const statusText = data.prediction === 1 ? 'At Risk' : 'Healthy';
-        const probability = ((data.disease_probability || data.diseaseProbability || data.probabilityDiabetes || 0) * 100).toFixed(1);
+        const probability = ((data.disease_probability || data.diseaseProbability || 0) * 100).toFixed(1);
         const confidence = ((data.confidenceLevel || data.disease_probability || 0) * 100).toFixed(1);
         const riskPct = parseFloat(probability);
         const barColor = riskPct > 70 ? 'linear-gradient(90deg, #ef4444, #dc2626)' :
                           riskPct > 40 ? 'linear-gradient(90deg, #f59e0b, #d97706)' :
                           'linear-gradient(90deg, #10b981, #059669)';
+
+        // Abnormal values for heart
+        let abnormalHtml = '';
+        const abnormalValues = data.abnormal_values || data.abnormalValues;
+        if (abnormalValues && Object.keys(abnormalValues).length > 0) {
+            abnormalHtml = '<div class="abnormal-values">';
+            for (const [key, val] of Object.entries(abnormalValues)) {
+                const status = (val.status || 'elevated').toLowerCase();
+                const name = key.replace(/([A-Z])/g, ' $1').trim();
+                abnormalHtml += `<span class="abnormal-tag ${status}"><i class="fas fa-exclamation-circle"></i> ${name}: ${val.value} (${val.normal})</span>`;
+            }
+            abnormalHtml += '</div>';
+        }
+
+        // Feature importance (top_factors)
+        let fiHtml = '';
+        const topFactors = data.top_factors || data.topFactors;
+        if (topFactors && Array.isArray(topFactors) && topFactors.length > 0) {
+            const maxVal = Math.max(...topFactors.map(f => f.importance || 0));
+            const colors = ['#ef4444', '#f97316', '#fb923c', '#fdba74', '#fed7aa'];
+            fiHtml = '<div class="feature-importance-container"><div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Why this prediction?</div>';
+            topFactors.slice(0, 5).forEach((f, i) => {
+                const importance = f.importance || 0;
+                const pct = maxVal > 0 ? (importance / maxVal * 100).toFixed(0) : 0;
+                const displayName = f.factor || 'Factor';
+                fiHtml += `<div class="fi-bar-wrapper"><span class="fi-label">${displayName}</span><div class="fi-bar-bg"><div class="fi-bar" style="width:${pct}%;background:${colors[i]}"></div></div><span class="fi-value">${(importance * 100).toFixed(0)}%</span></div>`;
+            });
+            fiHtml += '</div>';
+        }
 
         document.getElementById('heartCardBody').innerHTML = `
             <div class="risk-progress-container">
@@ -1223,11 +1252,13 @@
                 </div>
                 <div class="risk-progress-bar"><div class="risk-progress-fill" style="width:${riskPct}%;background:${barColor}"></div></div>
             </div>
+            ${abnormalHtml}
             <div class="prediction-metrics">
-                <div class="metric"><div class="metric-label">Risk Level</div><div class="metric-value" style="color: var(--${riskClass === 'high' ? 'danger' : riskClass === 'medium' ? 'warning' : 'success'})">${risk}</div></div>
                 <div class="metric"><div class="metric-label">Confidence</div><div class="metric-value">${confidence}%</div></div>
-                <div class="metric"><div class="metric-label">Disease Prob.</div><div class="metric-value">${probability}%</div></div>
-            </div>`;
+                <div class="metric"><div class="metric-label">Model</div><div class="metric-value" style="font-size:12px">${data.modelUsed || 'Ensemble v2.0'}</div></div>
+                <div class="metric"><div class="metric-label">Status</div><div class="metric-value" style="font-size:12px">${risk}</div></div>
+            </div>
+            ${fiHtml}`;
     }
 
     function updateOverview() {

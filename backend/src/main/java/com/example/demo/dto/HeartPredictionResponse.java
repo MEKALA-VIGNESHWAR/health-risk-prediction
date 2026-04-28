@@ -39,6 +39,9 @@ public class HeartPredictionResponse {
     @JsonProperty("risk_description")
     private String riskDescription;               // Detailed risk description
 
+    @JsonProperty("abnormal_values")
+    private Map<String, Object> abnormalValues;   // Clinically abnormal metrics
+
     public HeartPredictionResponse(Integer prediction, Double diseaseProbability, 
                                    Double noDiseaseProbability, String message) {
         this.prediction = prediction;

@@ -62,6 +62,10 @@ public class HeartPredictionService {
             response.setTopFactors(topFactors);
             response.setRecommendations(recommendations);
             response.setRiskDescription(generateRiskDescription(risk, probabilities[1]));
+            
+            // Get abnormal values
+            Map<String, Object> abnormalValues = detectAbnormalHeartValues(request);
+            response.setAbnormalValues(abnormalValues);
 
             // Save prediction to database
             HeartPrediction dbPrediction = savePrediction(request, prediction, probabilities, message, risk, topFactors, recommendations);
@@ -400,4 +404,42 @@ public class HeartPredictionService {
         return stats;
     }
 
+    // ===== ABNORMAL VALUES DETECTION =====
+    private Map<String, Object> detectAbnormalHeartValues(HeartPredictionRequest request) {
+        Map<String, Object> abnormal = new LinkedHashMap<>();
+        
+        if (request.getChol() != null && request.getChol() > 200) {
+            Map<String, String> val = new HashMap<>();
+            val.put("value", request.getChol().toString());
+            val.put("normal", "125-200 mg/dL");
+            val.put("status", request.getChol() > 240 ? "CRITICAL" : "HIGH");
+            abnormal.put("Cholesterol", val);
+        }
+        
+        if (request.getTrestbps() != null && request.getTrestbps() > 130) {
+            Map<String, String> val = new HashMap<>();
+            val.put("value", request.getTrestbps().toString());
+            val.put("normal", "90-120 mmHg");
+            val.put("status", request.getTrestbps() > 140 ? "CRITICAL" : "HIGH");
+            abnormal.put("Blood Pressure", val);
+        }
+        
+        if (request.getThalach() != null && request.getThalach() < 100) {
+            Map<String, String> val = new HashMap<>();
+            val.put("value", request.getThalach().toString());
+            val.put("normal", "100-170 bpm");
+            val.put("status", "ELEVATED");
+            abnormal.put("Max Heart Rate", val);
+        }
+        
+        if (request.getOldpeak() != null && request.getOldpeak() > 1.5) {
+            Map<String, String> val = new HashMap<>();
+            val.put("value", request.getOldpeak().toString());
+            val.put("normal", "< 1.0");
+            val.put("status", "CRITICAL");
+            abnormal.put("ST Depression", val);
+        }
+        
+        return abnormal;
+    }
 }
