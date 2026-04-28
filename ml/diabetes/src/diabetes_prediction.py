@@ -200,36 +200,42 @@ class DiabetesPredictionModel:
             gb_metrics = self._evaluate_model(gb_model, X_test_scaled, y_test, "Gradient Boosting")
             self.models_comparison['GradientBoosting'] = gb_metrics
             
-            # 5. Ensemble (Voting Classifier)
-            print("\n[5] Ensemble Voting Classifier...")
-            voting_model = VotingClassifier(
-                estimators=[
-                    ('dt', dt_model),
-                    ('lr', lr_model),
-                    ('rf', rf_model),
-                    ('gb', gb_model)
-                ],
-                voting='soft'
+            # 5. Advanced Ensemble (Stacking Classifier)
+            print("\n[5] Stacking Ensemble (Final Model)...")
+            from sklearn.ensemble import StackingClassifier
+            from sklearn.svm import SVC
+            
+            estimators = [
+                ('rf', rf_model),
+                ('gb', gb_model),
+                ('dt', dt_model)
+            ]
+            
+            stacking_model = StackingClassifier(
+                estimators=estimators,
+                final_estimator=LogisticRegression(),
+                cv=5,
+                n_jobs=-1
             )
-            voting_model.fit(X_train_scaled, y_train)
-            voting_metrics = self._evaluate_model(voting_model, X_test_scaled, y_test, "Voting Ensemble")
-            self.models_comparison['VotingEnsemble'] = voting_metrics
+            stacking_model.fit(X_train_scaled, y_train)
+            stacking_metrics = self._evaluate_model(stacking_model, X_test_scaled, y_test, "Stacking Ensemble")
+            self.models_comparison['StackingEnsemble'] = stacking_metrics
             
             # Select best model
             print("\n=== MODEL COMPARISON ===")
             print("\nF1-Score Rankings:")
             for i, (model_name, metrics) in enumerate(sorted(self.models_comparison.items(), 
-                                                            key=lambda x: x[1]['f1'], reverse=True), 1):
-                print(f"  {i}. {model_name:20s} - F1: {metrics['f1']:.4f}, AUC-ROC: {metrics['roc_auc']:.4f}")
+                                                            key=lambda x: x.get('f1', 0), reverse=True), 1):
+                print(f"  {i}. {model_name:20s} - F1: {metrics.get('f1', 0):.4f}, AUC-ROC: {metrics.get('roc_auc', 0):.4f}")
             
-            # Use ensemble as best model with calibration
-            self.best_model = voting_model
-            self.model = CalibratedClassifierCV(voting_model, method='sigmoid', cv=5)
+            # Use stacking as best model with calibration
+            self.best_model = stacking_model
+            self.model = CalibratedClassifierCV(stacking_model, method='sigmoid', cv=5)
             self.model.fit(X_train_scaled, y_train)
             
             # Get calibrated metrics
-            print("\n=== ENSEMBLE WITH PROBABILITY CALIBRATION ===")
-            ensemble_metrics = self._evaluate_model(self.model, X_test_scaled, y_test, "Calibrated Ensemble")
+            print("\n=== STACKING ENSEMBLE WITH PROBABILITY CALIBRATION ===")
+            ensemble_metrics = self._evaluate_model(self.model, X_test_scaled, y_test, "Calibrated Stacking")
             
             # Store confusion matrix and ROC curve data
             y_pred = self.model.predict(X_test_scaled)

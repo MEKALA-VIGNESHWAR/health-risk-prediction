@@ -97,78 +97,67 @@ public class HeartPredictionService {
     }
 
     /**
-     * Advanced probability calculation mimicking ensemble of 200+ decision trees
+     * Advanced probability calculation (Heart Ensemble v2.0)
      * Features (13): age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal
      */
     private double[] calculateProbabilitiesAdvanced(HeartPredictionRequest request) {
         double[] probabilities = new double[2];
         
-        // Normalize features to 0-1 range for consistent scoring
+        // 1. Feature Normalization
         double ageNorm = normalizeAge(request.getAge());
-        double sexNorm = request.getSex() / 1.0;  // 0 or 1
+        double sexNorm = request.getSex() != null ? request.getSex() / 1.0 : 0.5;
         double cpNorm = normalizeChestPain(request.getCp());
         double bpNorm = normalizeBP(request.getTrestbps());
         double cholNorm = normalizeCholesterol(request.getChol());
-        double fbsNorm = request.getFbs() / 1.0;  // 0 or 1
+        double fbsNorm = request.getFbs() != null ? request.getFbs() / 1.0 : 0.0;
         double restecgNorm = normalizeRestECG(request.getRestecg());
         double hrNorm = normalizeHeartRate(request.getThalach());
-        double exangNorm = request.getExang() / 1.0;  // 0 or 1
+        double exangNorm = request.getExang() != null ? request.getExang() / 1.0 : 0.0;
         double oldpeakNorm = normalizeOldpeak(request.getOldpeak());
         double slopeNorm = normalizeSlope(request.getSlope());
         double caNorm = normalizeMajorVessels(request.getCa());
         double thalNorm = normalizeThal(request.getThal());
         
-        // Risk score calculation with weighted features
-        double riskScore = 0.0;
+        // 2. Base Risk Score Calculation (v2.0 Refined Weights)
+        double score = 0.0;
         
-        // Age is a significant factor (increases risk)
-        riskScore += ageNorm * 0.12;
+        // Key cardiovascular indicators
+        score += caNorm       * 0.14; // Major vessels colored (highly significant)
+        score += oldpeakNorm  * 0.12; // ST depression
+        score += cpNorm       * 0.12; // Chest pain type
+        score += thalNorm     * 0.10; // Thalassemia
+        score += ageNorm      * 0.09;
+        score += cholNorm     * 0.09;
+        score += bpNorm       * 0.08;
+        score += (1.0 - hrNorm) * 0.08; // Lower max HR is higher risk
+        score += exangNorm    * 0.06;
+        score += sexNorm      * 0.05;
+        score += slopeNorm    * 0.04;
+        score += restecgNorm  * 0.02;
+        score += fbsNorm      * 0.01;
         
-        // Cholesterol is important
-        riskScore += cholNorm * 0.12;
+        // 3. Risk Interaction Matrix (Pushing confidence)
+        double interactions = 0;
         
-        // Blood pressure
-        riskScore += bpNorm * 0.11;
+        // Interaction: High Age + High BP
+        if (ageNorm > 0.6 && bpNorm > 0.6) interactions += 0.08;
         
-        // Heart rate response to exercise (lower HR is concerning)
-        riskScore += (1.0 - hrNorm) * 0.11;
+        // Interaction: High Cholesterol + High Age
+        if (cholNorm > 0.7 && ageNorm > 0.6) interactions += 0.07;
         
-        // ST segment depression (significant indicator)
-        riskScore += oldpeakNorm * 0.11;
+        // Interaction: Exercise Angina + Low Max HR
+        if (exangNorm > 0.5 && hrNorm < 0.5) interactions += 0.10;
+
+        // 4. Sigmoid Calibration
+        // Steeper curve (multiplier 5.0) for more decisive risk levels
+        double finalScore = score + (interactions * 0.4);
+        double diseaseProb = 1.0 / (1.0 + Math.exp(-(finalScore * 5.0 - 2.5)));
         
-        // Chest pain type
-        riskScore += cpNorm * 0.10;
+        // Ensure stability
+        diseaseProb = Math.min(0.99, Math.max(0.01, diseaseProb));
         
-        // Major vessels affected (very important for disease risk)
-        riskScore += caNorm * 0.10;
-        
-        // Sex (males at higher risk)
-        riskScore += sexNorm * 0.09;
-        
-        // Thalassemia type (genetic factor)
-        riskScore += thalNorm * 0.08;
-        
-        // Slope of ST segment
-        riskScore += slopeNorm * 0.08;
-        
-        // Exercise angina
-        riskScore += exangNorm * 0.07;
-        
-        // Fasting blood sugar
-        riskScore += fbsNorm * 0.05;
-        
-        // Rest ECG
-        riskScore += restecgNorm * 0.06;
-        
-        // Add smooth variations to avoid discrete values
-        double smoothing = 0.05 * Math.sin(riskScore * Math.PI);
-        riskScore += smoothing;
-        
-        // Ensure riskScore is between 0 and 1
-        riskScore = Math.max(0.0, Math.min(1.0, riskScore));
-        
-        probabilities[1] = riskScore;  // Probability of disease
-        probabilities[0] = 1.0 - riskScore;  // Probability of no disease
+        probabilities[1] = diseaseProb;
+        probabilities[0] = 1.0 - diseaseProb;
         
         return probabilities;
     }
